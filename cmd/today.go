@@ -34,7 +34,6 @@ func openTodaysNote() {
 	path := fmt.Sprintf("%s/%s", cfg.dir, todayFileName())
 
 	if !checkFileExists(path) || checkFileEmpty(path) {
-		fmt.Println("creating new file")
 		f := must(os.Create(path))
 		tpl := templateNote()
 
@@ -65,7 +64,6 @@ func todayFileName() string {
 
 func checkFileExists(filePath string) bool {
 	_, error := os.Stat(filePath)
-	//return !os.IsNotExist(err)
 	return !errors.Is(error, os.ErrNotExist)
 }
 
@@ -75,7 +73,6 @@ func checkFileEmpty(filePath string) bool {
 		return true
 	}
 
-	fmt.Printf("%#v\n", info)
 	if info.Size() == 0 {
 		return true
 	}
@@ -84,16 +81,6 @@ func checkFileEmpty(filePath string) bool {
 
 func init() {
 	rootCmd.AddCommand(todayCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// todayCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// todayCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 type TplArgs struct {
