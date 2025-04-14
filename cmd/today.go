@@ -31,14 +31,14 @@ var todayCmd = &cobra.Command{
 }
 
 func openTodaysNote() {
-	path := fmt.Sprintf("%s/%s", cfg.dir, todayFileName())
+	path := todayFilePath()
 
 	if !checkFileExists(path) || checkFileEmpty(path) {
 		f := must(os.Create(path))
 		tpl := templateNote()
 
-		check(tpl.Execute(f, &TplArgs{Date: todayDate()}))
-		check(f.Close())
+		cobra.CheckErr(tpl.Execute(f, &TplArgs{Date: todayDate()}))
+		cobra.CheckErr(f.Close())
 
 	}
 
@@ -48,8 +48,20 @@ func openTodaysNote() {
 	env := os.Environ()
 
 	if err := syscall.Exec(command, []string{command, path}, env); err != nil {
-		panic(err)
+		cobra.CheckErr(err)
 	}
+}
+
+func printTodaysNote() {
+	path := todayFilePath()
+	b, err := os.ReadFile(path)
+	cobra.CheckErr(err)
+
+	fmt.Fprintln(os.Stdout, string(b))
+}
+
+func todayFilePath() string {
+	return fmt.Sprintf("%s/%s", cfg.dir, todayFileName())
 }
 
 func todayDate() string {

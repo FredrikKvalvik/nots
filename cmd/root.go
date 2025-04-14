@@ -21,9 +21,30 @@ var rootCmd = &cobra.Command{
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Hello world")
+		switch true {
+		case printContent:
+			printTodaysNote()
+			return
+
+		case printFilePath:
+			fmt.Fprintln(os.Stdout, todayFilePath())
+			return
+
+		case printFileDir:
+			fmt.Fprintln(os.Stdout, cfg.dir)
+			return
+
+		default:
+			openTodaysNote()
+		}
 	},
 }
+
+var (
+	printFilePath = false
+	printFileDir  = false
+	printContent  = false
+)
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -35,13 +56,7 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.notes.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
+	rootCmd.PersistentFlags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
+	rootCmd.PersistentFlags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
 }
