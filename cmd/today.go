@@ -12,7 +12,6 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/charmbracelet/glamour"
 	"github.com/spf13/cobra"
 )
 
@@ -46,12 +45,17 @@ func printTodaysNote() {
 }
 
 func printNote(path string) {
+	out := getNoteContent(path)
+
+	// out, err := glamour.Render(string(b), "dark")
+	// cobra.CheckErr(err)
+
+	fmt.Print(out)
+}
+func getNoteContent(path string) string {
 	b, err := os.ReadFile(path)
 	cobra.CheckErr(err)
-
-	out, err := glamour.Render(string(b), "dark")
-	cobra.CheckErr(err)
-	fmt.Print(out)
+	return string(b)
 }
 
 func todayFilePath() string {

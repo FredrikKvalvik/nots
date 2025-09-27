@@ -12,6 +12,7 @@ import (
 
 type config struct {
 	EditorCommand string `toml:"editor"`
+	Pager         string `toml:"viewer"`
 	Dir           string `toml:"notes-dir"`
 }
 
@@ -46,6 +47,7 @@ func newDefaultConfig() config {
 
 	return config{
 		EditorCommand: "$EDITOR",
+		Pager:         "$PAGER",
 		Dir:           dirpath,
 	}
 }
