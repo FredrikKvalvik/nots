@@ -54,7 +54,6 @@ func resolveNotsDirPath(path string) string {
 	// first we remove any leading/trailing whitespace
 	path = strings.TrimSpace(path)
 
-	fmt.Printf("path: %v\n", path)
 	// user refers the their home dir
 	if strings.HasPrefix(path, "~/") {
 
@@ -68,7 +67,6 @@ func resolveNotsDirPath(path string) string {
 
 	// we remove any trailing slashes
 	path = strings.TrimSuffix(path, "/")
-	fmt.Printf("path: %v\n", path)
 
 	return path
 }

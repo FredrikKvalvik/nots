@@ -17,7 +17,7 @@ func ListCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "list",
-		Short:   "List all version tags",
+		Short:   "list all notes",
 		Aliases: []string{"ls"},
 		Run: func(cmd *cobra.Command, args []string) {
 			files, err := os.ReadDir(cfg.Dir)
@@ -26,10 +26,13 @@ func ListCmd() *cobra.Command {
 			var str strings.Builder
 			if fullPath {
 				for _, f := range files {
-					fmt.Fprintf(&str, "%s/%s", cfg.Dir, f.Name())
+					fmt.Fprintf(&str, "%s/%s\n", cfg.Dir, f.Name())
 				}
 			} else {
 				for _, f := range files {
+					if f.IsDir() {
+						continue
+					}
 					fmt.Fprintln(&str, f.Name())
 				}
 			}

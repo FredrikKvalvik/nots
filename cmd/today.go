@@ -17,15 +17,17 @@ import (
 )
 
 func openTodaysNote() {
-	path := todayFilePath()
+	path := filePath(todayFileName())
+	openNote(path)
+}
 
+func openNote(path string) {
 	if !checkFileExists(path) || checkFileEmpty(path) {
 		f := must(os.Create(path))
 		tpl := templateNote()
 
 		cobra.CheckErr(tpl.Execute(f, &TplArgs{Date: todayDate()}))
 		cobra.CheckErr(f.Close())
-
 	}
 
 	editorName := os.ExpandEnv(cfg.EditorCommand)
@@ -36,6 +38,7 @@ func openTodaysNote() {
 	if err := syscall.Exec(command, []string{command, path}, env); err != nil {
 		cobra.CheckErr(err)
 	}
+
 }
 
 func printTodaysNote() {
@@ -52,7 +55,12 @@ func printNote(path string) {
 }
 
 func todayFilePath() string {
-	return fmt.Sprintf("%s/%s", cfg.Dir, todayFileName())
+	return filePath(todayFileName())
+}
+
+func filePath(name string) string {
+	return fmt.Sprintf("%s/%s", cfg.Dir, name)
+
 }
 
 func todayDate() string {

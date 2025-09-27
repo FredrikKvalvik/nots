@@ -2,10 +2,19 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
+	"strings"
 
+	"github.com/fredrikkvalvik/nots/internal/util"
 	"github.com/spf13/cobra"
 )
+
+func init() {
+	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
+	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
+	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -21,23 +30,52 @@ var rootCmd = &cobra.Command{
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
 	Run: func(cmd *cobra.Command, args []string) {
-		switch true {
-		case printContent:
-			printTodaysNote()
+		if util.HasStdinData() {
+			rootHandleStdin(cmd, args)
 			return
-
-		case printFilePath:
-			_, _ = fmt.Fprintln(os.Stdout, todayFilePath())
-			return
-
-		case printFileDir:
-			_, _ = fmt.Fprintln(os.Stdout, cfg.Dir)
-			return
-
-		default:
-			openTodaysNote()
 		}
+		rootHandleCmds(cmd, args)
 	},
+}
+
+func rootHandleStdin(_ *cobra.Command, _ []string) {
+	b, err := io.ReadAll(os.Stdin)
+	cobra.CheckErr(err)
+
+	fileName := string(b)
+	fileName = strings.TrimSpace(fileName)
+
+	if util.IsFileName(fileName) {
+		openNote(filePath(fileName))
+		return
+	}
+
+	if util.IsFilePath(fileName) {
+		openNote(fileName)
+		return
+	}
+
+	cobra.CheckErr(fmt.Errorf("could not resolve input: %s", fileName))
+}
+
+func rootHandleCmds(_ *cobra.Command, _ []string) {
+	switch true {
+	case printContent:
+		printTodaysNote()
+		return
+
+	case printFilePath:
+		_, _ = fmt.Fprintln(os.Stdout, todayFilePath())
+		return
+
+	case printFileDir:
+		_, _ = fmt.Fprintln(os.Stdout, cfg.Dir)
+		return
+
+	default:
+		openTodaysNote()
+	}
+
 }
 
 var (
@@ -53,10 +91,4 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func init() {
-	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
-	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
-	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
 }
