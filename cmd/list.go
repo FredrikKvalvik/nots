@@ -33,20 +33,16 @@ func ListCmd() *cobra.Command {
 			var err error
 			var entries [][]string
 			if listRecursive {
-				entries, err = lister.ListPathsRecursive(dirPath)
+				entries, err = lister.ListPathsRecursive(dirPath, listAll)
 				cobra.CheckErr(err)
 			} else {
-				ent, err := lister.ListDir(dirPath, listAll)
+				entries, err = lister.ListDir(dirPath, listAll)
 				cobra.CheckErr(err)
-				for _, e := range ent {
-					entries = append(entries, []string{e})
-				}
 			}
 
 			var str strings.Builder
 			if fullPath {
 				for _, name := range entries {
-
 					fmt.Fprintf(&str, "%s/%s\n", cfg.Dir, strings.Join(name, "/"))
 				}
 			} else {
