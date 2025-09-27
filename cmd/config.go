@@ -14,6 +14,8 @@ type config struct {
 	EditorCommand string `toml:"editor"`
 	Pager         string `toml:"viewer"`
 	Dir           string `toml:"notes-dir"`
+
+	NameTemplate string
 }
 
 var cfg *config = loadConfig()
@@ -49,6 +51,8 @@ func newDefaultConfig() config {
 		EditorCommand: "$EDITOR",
 		Pager:         "$PAGER",
 		Dir:           dirpath,
+
+		NameTemplate: "yyyy-mm-dd",
 	}
 }
 

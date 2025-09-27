@@ -19,6 +19,7 @@ func ListCmd() *cobra.Command {
 		Use:     "list",
 		Short:   "list all notes",
 		Aliases: []string{"ls"},
+
 		Run: func(cmd *cobra.Command, args []string) {
 			files, err := os.ReadDir(cfg.Dir)
 			cobra.CheckErr(err)

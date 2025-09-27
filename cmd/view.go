@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
@@ -22,6 +23,7 @@ func ViewCmd() *cobra.Command {
 		Use:     "view",
 		Short:   "view a specified note",
 		Aliases: []string{"ls"},
+
 		Run: func(cmd *cobra.Command, args []string) {
 			if util.HasStdinData() {
 				vh.viewHandleStdin(cmd, args)
@@ -70,20 +72,17 @@ func (vh *viewHandler) viewHandleCmd(_ *cobra.Command, args []string) {
 	pagerName := os.ExpandEnv(cfg.Pager)
 	cmdWithArgs := strings.Split(pagerName, " ")
 	cmdName, cmdArgs := cmdWithArgs[0], cmdWithArgs[1:]
-	fmt.Printf("cmdName: %v\n", cmdName)
-	fmt.Printf("cmdArgs: %v\n", cmdArgs)
 
 	command, err := exec.LookPath(cmdName)
 	cobra.CheckErr(err)
-	fmt.Printf("command: %v\n", command)
 
 	cmd := append([]string{cmdName}, cmdArgs...)
 	cmd = append(cmd, filePath)
-	fmt.Printf("cmd: %v\n", cmd)
+	slog.Debug(fmt.Sprintf("cmd: %v\n", cmd))
+
 	if err := syscall.Exec(command, cmd, os.Environ()); err != nil {
 		cobra.CheckErr(err)
 	}
-	// r.Close()
 }
 
 // func viewHandleStdin(cmd *cobra.Command, args []string) {}

@@ -3,17 +3,30 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/fredrikkvalvik/nots/internal/util"
 	"github.com/spf13/cobra"
+	"gitlab.com/greyxor/slogor"
+)
+
+var (
+	printFilePath = false
+	printFileDir  = false
+	printContent  = false
+	debug         = false
 )
 
 func init() {
 	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
 	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
 	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
+
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "prints debug messages")
+
 }
 
 // rootCmd represents the base command when called without any subcommands
@@ -22,6 +35,10 @@ var rootCmd = &cobra.Command{
 	Short: "utility for managing daily notes",
 	// 	Long: `A longer description that spans multiple lines and likely contains
 	// examples and usage of using your application. For example:
+
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		setupLogger()
+	},
 
 	// Cobra is a CLI library for Go that empowers applications.
 	// This application is a tool to generate the needed files
@@ -77,12 +94,20 @@ func rootHandleCmds(_ *cobra.Command, _ []string) {
 	}
 
 }
+func setupLogger() {
 
-var (
-	printFilePath = false
-	printFileDir  = false
-	printContent  = false
-)
+	if debug {
+		handler := slogor.NewHandler(
+			os.Stderr,
+			slogor.SetLevel(slog.LevelDebug),
+			slogor.SetTimeFormat(time.TimeOnly),
+			slogor.ShowSource(),
+		)
+		slog.SetDefault(slog.New(handler))
+	} else {
+		slog.SetDefault(slog.New(slog.DiscardHandler))
+	}
+}
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
