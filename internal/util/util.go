@@ -26,7 +26,7 @@ func IsFileName(s string) bool {
 }
 
 func IsFilePath(s string) bool {
-	return !strings.HasSuffix(s, ".md")
+	return strings.HasSuffix(s, ".md")
 }
 
 func FileExists(s string) (bool, error) {

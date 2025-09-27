@@ -12,9 +12,9 @@ func listDir(path string) ([]os.DirEntry, error) {
 	return os.ReadDir(path)
 }
 
-func listAllRecursive(path string, includeDirs bool) ([][]string, error) {
-	paths := [][]string{}
-	filepath.WalkDir(path, func(p string, d fs.DirEntry, err error) error {
+func listAllRecursive(path string, includeDirs bool) ([]Path, error) {
+	paths := []Path{}
+	err := filepath.WalkDir(path, func(p string, d fs.DirEntry, err error) error {
 		if p == path {
 			return nil
 		}
@@ -25,49 +25,34 @@ func listAllRecursive(path string, includeDirs bool) ([][]string, error) {
 
 		p = strings.TrimPrefix(p, path+"/")
 
-		paths = append(paths, strings.Split(p, "/"))
+		paths = append(paths, newPath(p))
 		return nil
 	})
 
-	return paths, nil
+	return paths, err
 }
 
-func ListFilesInDir(path string) ([]string, error) {
+func ListDir(path string, includeDirs bool) ([]Path, error) {
 	entries, err := listDir(path)
 	if err != nil {
 		return nil, err
 	}
 
-	names := []string{}
-	for _, ent := range entries {
-		if !ent.IsDir() {
-			names = append(names, ent.Name())
-		}
-	}
-
-	return names, nil
-}
-
-func ListDir(path string, includeDirs bool) ([][]string, error) {
-	entries, err := listDir(path)
-	if err != nil {
-		return nil, err
-	}
-
-	names := [][]string{}
+	names := []Path{}
 	for _, ent := range entries {
 		if ent.IsDir() && !includeDirs {
 			continue
 		}
-		names = append(names, []string{ent.Name()})
+		names = append(names, newPath(ent.Name()))
 	}
 
+	slog.Info("list-dir", "list", names)
 	return names, nil
 }
 
 // returns a list of paths where each item is a list of
 // names to path to files in multiple directories
-func ListPathsRecursive(path string, includeDirs bool) ([][]string, error) {
+func ListPathsRecursive(path string, includeDirs bool) ([]Path, error) {
 	paths, err := listAllRecursive(path, includeDirs)
 	if err != nil {
 		return nil, err

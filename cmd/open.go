@@ -36,9 +36,10 @@ func OpenCmd() *cobra.Command {
 				}
 				input = args[0]
 			}
+			input = strings.TrimSpace(input)
 
-			if !util.IsFileName(input) {
-				cobra.CheckErr(fmt.Errorf("invalid file name: %s", input))
+			if !util.IsFilePath(input) {
+				cobra.CheckErr(fmt.Errorf("invalid file path: %s", input))
 			}
 			fp := filePath(input)
 

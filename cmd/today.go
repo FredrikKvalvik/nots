@@ -22,6 +22,9 @@ func openTodaysNote() {
 
 func openNote(path string) {
 	if !checkFileExists(path) || checkFileEmpty(path) {
+		err := os.MkdirAll(path, os.ModePerm)
+		cobra.CheckErr(err)
+
 		f := must(os.Create(path))
 		tpl := templateNote()
 
