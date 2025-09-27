@@ -1,0 +1,51 @@
+package cmd
+
+import (
+	"fmt"
+	"io"
+	"os"
+	"strings"
+
+	"github.com/fredrikkvalvik/nots/internal/util"
+	"github.com/spf13/cobra"
+)
+
+func init() {
+	rootCmd.AddCommand(OpenCmd())
+}
+
+func OpenCmd() *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:     "open",
+		Short:   "open note with spesified name. (must end with .md)",
+		Aliases: []string{"o"},
+
+		Run: func(cmd *cobra.Command, args []string) {
+			var input string
+			if util.HasStdinData() {
+				b, err := io.ReadAll(os.Stdin)
+				cobra.CheckErr(err)
+
+				input = strings.TrimSpace(string(b))
+			} else {
+				if len(args) < 1 {
+					cobra.CheckErr("you need to specify a file name")
+					cobra.CheckErr(cmd.Help())
+					os.Exit(1)
+				}
+				input = args[0]
+			}
+
+			if !util.IsFileName(input) {
+				cobra.CheckErr(fmt.Errorf("invalid file name: %s", input))
+			}
+			fp := filePath(input)
+
+			openNote(fp)
+
+		},
+	}
+
+	return cmd
+}

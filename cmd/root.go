@@ -17,6 +17,7 @@ var (
 	printFilePath = false
 	printFileDir  = false
 	printContent  = false
+	viewContent   = false
 	debug         = false
 )
 
@@ -24,6 +25,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
 	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
 	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
+	rootCmd.Flags().BoolVar(&viewContent, "view", false, "view the contents of todays note")
 
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "prints debug messages")
 
@@ -77,6 +79,11 @@ func rootHandleStdin(_ *cobra.Command, _ []string) {
 
 func rootHandleCmds(_ *cobra.Command, _ []string) {
 	switch true {
+
+	case viewContent:
+		spawnViewer(todayFilePath())
+		return
+
 	case printContent:
 		printTodaysNote()
 		return
@@ -92,7 +99,6 @@ func rootHandleCmds(_ *cobra.Command, _ []string) {
 	default:
 		openTodaysNote()
 	}
-
 }
 func setupLogger() {
 
