@@ -20,13 +20,13 @@ func ListCmd() *cobra.Command {
 		Short:   "List all version tags",
 		Aliases: []string{"ls"},
 		Run: func(cmd *cobra.Command, args []string) {
-			files, err := os.ReadDir(cfg.dir)
+			files, err := os.ReadDir(cfg.Dir)
 			cobra.CheckErr(err)
 
 			var str strings.Builder
 			if fullPath {
 				for _, f := range files {
-					fmt.Fprintf(&str, "%s/%s", cfg.dir, f.Name())
+					fmt.Fprintf(&str, "%s/%s", cfg.Dir, f.Name())
 				}
 			} else {
 				for _, f := range files {

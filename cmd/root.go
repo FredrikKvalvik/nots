@@ -31,7 +31,7 @@ var rootCmd = &cobra.Command{
 			return
 
 		case printFileDir:
-			_, _ = fmt.Fprintln(os.Stdout, cfg.dir)
+			_, _ = fmt.Fprintln(os.Stdout, cfg.Dir)
 			return
 
 		default:

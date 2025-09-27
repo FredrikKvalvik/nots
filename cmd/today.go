@@ -28,7 +28,7 @@ func openTodaysNote() {
 
 	}
 
-	editorName := os.ExpandEnv(cfg.editorCommand)
+	editorName := os.ExpandEnv(cfg.EditorCommand)
 	command := must(exec.LookPath(editorName))
 
 	env := os.Environ()
@@ -52,7 +52,7 @@ func printNote(path string) {
 }
 
 func todayFilePath() string {
-	return fmt.Sprintf("%s/%s", cfg.dir, todayFileName())
+	return fmt.Sprintf("%s/%s", cfg.Dir, todayFileName())
 }
 
 func todayDate() string {
