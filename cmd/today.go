@@ -12,23 +12,9 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/spf13/cobra"
 )
-
-// todayCmd represents the today command
-var todayCmd = &cobra.Command{
-	Use:   "today",
-	Short: "A brief description of your command",
-	// 	Long: `A longer description that spans multiple lines and likely contains examples
-	// and usage of using your command. For example:
-
-	// Cobra is a CLI library for Go that empowers applications.
-	// This application is a tool to generate the needed files
-	// to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		openTodaysNote()
-	},
-}
 
 func openTodaysNote() {
 	path := todayFilePath()
@@ -53,11 +39,16 @@ func openTodaysNote() {
 }
 
 func printTodaysNote() {
-	path := todayFilePath()
+	printNote(todayFilePath())
+}
+
+func printNote(path string) {
 	b, err := os.ReadFile(path)
 	cobra.CheckErr(err)
 
-	fmt.Fprintln(os.Stdout, string(b))
+	out, err := glamour.Render(string(b), "dark")
+	cobra.CheckErr(err)
+	fmt.Print(out)
 }
 
 func todayFilePath() string {
@@ -91,10 +82,6 @@ func checkFileEmpty(filePath string) bool {
 	return false
 }
 
-func init() {
-	rootCmd.AddCommand(todayCmd)
-}
-
 type TplArgs struct {
 	Date string
 }
@@ -108,16 +95,4 @@ func templateNote() *template.Template {
 `))
 
 	return tpl
-	// if err := tpl.Execute(&buf, struct {
-	// 	Date string
-	// }{date}); err != nil {
-	// 	panic(err)
-	// }
-
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

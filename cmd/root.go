@@ -27,11 +27,11 @@ var rootCmd = &cobra.Command{
 			return
 
 		case printFilePath:
-			fmt.Fprintln(os.Stdout, todayFilePath())
+			_, _ = fmt.Fprintln(os.Stdout, todayFilePath())
 			return
 
 		case printFileDir:
-			fmt.Fprintln(os.Stdout, cfg.dir)
+			_, _ = fmt.Fprintln(os.Stdout, cfg.dir)
 			return
 
 		default:
@@ -56,7 +56,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
-	rootCmd.PersistentFlags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
-	rootCmd.PersistentFlags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
+	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
+	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
+	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
 }
