@@ -1,4 +1,4 @@
-package cmd
+package config
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type config struct {
+type Config struct {
 	EditorCommand string `toml:"editor"`
 	Pager         string `toml:"viewer"`
 	Dir           string `toml:"notes-dir"`
@@ -18,9 +18,7 @@ type config struct {
 	NameTemplate string
 }
 
-var cfg *config = loadConfig()
-
-func loadConfig() *config {
+func Load() *Config {
 	filePath := resolveConfigPath()
 
 	var conf = newDefaultConfig()
@@ -43,11 +41,11 @@ func resolveConfigPath() string {
 	return configPath
 }
 
-func newDefaultConfig() config {
+func newDefaultConfig() Config {
 	homedir := must(os.UserHomeDir())
 	dirpath := must(filepath.Abs(filepath.Join(homedir, "nots")))
 
-	return config{
+	return Config{
 		EditorCommand: "$EDITOR",
 		Pager:         "$PAGER",
 		Dir:           dirpath,

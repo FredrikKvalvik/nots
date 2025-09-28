@@ -20,9 +20,11 @@ func ListCmd() *cobra.Command {
 	var listRecursive bool
 
 	cmd := &cobra.Command{
-		Use:     "list",
-		Short:   "list all notes",
-		Aliases: []string{"ls"},
+		Use:   "list",
+		Short: "list all notes",
+		// ValidArgsFunction: completers.DirListCompleter(cfg),
+		ValidArgsFunction: dirListCompleter,
+		Aliases:           []string{"ls"},
 
 		Run: func(cmd *cobra.Command, args []string) {
 			dirPath := cfg.Dir
@@ -36,7 +38,7 @@ func ListCmd() *cobra.Command {
 				entries, err = lister.ListPathsRecursive(dirPath, listAll)
 				cobra.CheckErr(err)
 			} else {
-				entries, err = lister.ListDir(dirPath, listAll)
+				entries, err = lister.ListPaths(dirPath, listAll)
 				cobra.CheckErr(err)
 			}
 

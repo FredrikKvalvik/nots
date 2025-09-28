@@ -17,9 +17,12 @@ func init() {
 func OpenCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:     "open",
-		Short:   "open note with spesified name. (must end with .md)",
-		Aliases: []string{"o"},
+		Use:   "open",
+		Short: "open note with spesified name. (must end with .md)",
+
+		ValidArgsFunction: fileListCompleter,
+		Args:              cobra.RangeArgs(0, 1),
+		Aliases:           []string{"o"},
 
 		Run: func(cmd *cobra.Command, args []string) {
 			var input string

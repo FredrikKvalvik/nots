@@ -20,7 +20,10 @@ func ViewCmd() *cobra.Command {
 	vh := viewHandler{}
 
 	cmd := &cobra.Command{
-		Use:     "view",
+		Use:               "view [file]",
+		Example:           "echo 'filename.md' | nots view" + "\n" + "nots view filename.md",
+		ValidArgsFunction: fileListCompleter,
+
 		Short:   "view a specified note",
 		Aliases: []string{"ls"},
 
@@ -33,7 +36,8 @@ func ViewCmd() *cobra.Command {
 				return
 			}
 
-			cobra.CheckErr("invalid use")
+			fmt.Println("invalid use")
+			cmd.Help()
 		},
 	}
 	cmd.Flags().BoolVar(&vh.toStdOut, "stdout", false, "prints the file to stdout instead of pager")
@@ -45,12 +49,14 @@ type viewHandler struct {
 	toStdOut bool
 }
 
-func (vh *viewHandler) viewHandleStdin(cmd *cobra.Command, args []string) {}
+func (vh *viewHandler) viewHandleStdin(cmd *cobra.Command, args []string) {
+
+}
 
 func (vh *viewHandler) viewHandleCmd(_ *cobra.Command, args []string) {
 	filename := strings.TrimSpace(args[0])
 
-	if !util.IsFileName(filename) {
+	if !util.IsFilePath(filename) {
 		cobra.CheckErr(fmt.Errorf("expects a valid file name, got=%s", filename))
 	}
 	filePath := filePath(filename)
@@ -64,7 +70,6 @@ func (vh *viewHandler) viewHandleCmd(_ *cobra.Command, args []string) {
 	content := getNoteContent(filePath)
 
 	if vh.toStdOut {
-		fmt.Printf("hello!")
 		fmt.Print(content)
 		return
 	}

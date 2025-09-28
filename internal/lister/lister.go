@@ -25,14 +25,14 @@ func listAllRecursive(path string, includeDirs bool) ([]Path, error) {
 
 		p = strings.TrimPrefix(p, path+"/")
 
-		paths = append(paths, newPath(p))
+		paths = append(paths, NewPath(p))
 		return nil
 	})
 
 	return paths, err
 }
 
-func ListDir(path string, includeDirs bool) ([]Path, error) {
+func ListPaths(path string, includeDirs bool) ([]Path, error) {
 	entries, err := listDir(path)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func ListDir(path string, includeDirs bool) ([]Path, error) {
 		if ent.IsDir() && !includeDirs {
 			continue
 		}
-		names = append(names, newPath(ent.Name()))
+		names = append(names, NewPath(ent.Name()))
 	}
 
 	slog.Info("list-dir", "list", names)

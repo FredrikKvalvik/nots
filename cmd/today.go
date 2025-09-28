@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"syscall"
 	"text/template"
 	"time"
@@ -22,7 +23,8 @@ func openTodaysNote() {
 
 func openNote(path string) {
 	if !checkFileExists(path) || checkFileEmpty(path) {
-		err := os.MkdirAll(path, os.ModePerm)
+
+		err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
 		cobra.CheckErr(err)
 
 		f := must(os.Create(path))
@@ -110,4 +112,11 @@ func templateNote() *template.Template {
 `))
 
 	return tpl
+}
+
+func must[T any](t T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
