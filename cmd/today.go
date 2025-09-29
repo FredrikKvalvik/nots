@@ -19,7 +19,6 @@ import (
 
 func openNote(path string) {
 	if !checkFileExists(path) || checkFileEmpty(path) {
-
 		err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
 		cobra.CheckErr(err)
 
@@ -30,6 +29,11 @@ func openNote(path string) {
 		cobra.CheckErr(f.Close())
 	}
 
+	spawnEditor(path)
+}
+
+// helper for spawning editor process
+func spawnEditor(path string) {
 	slog.Debug("opening note", "path", path)
 	currentState.PreviousNote = &path
 	cobra.CheckErr(currentState.Save())
@@ -42,7 +46,6 @@ func openNote(path string) {
 	if err := syscall.Exec(command, []string{command, path}, env); err != nil {
 		cobra.CheckErr(err)
 	}
-
 }
 
 func getNoteContent(path string) string {
@@ -57,7 +60,6 @@ func todayFilePath() string {
 
 func filePath(name string) string {
 	return fmt.Sprintf("%s/%s", cfg.RootDir, name)
-
 }
 
 func todayDate() string {
