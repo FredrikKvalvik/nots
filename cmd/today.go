@@ -17,11 +17,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func openTodaysNote() {
-	path := filePath(todayFileName())
-	openNote(path)
-}
-
 func openNote(path string) {
 	if !checkFileExists(path) || checkFileEmpty(path) {
 
@@ -50,18 +45,6 @@ func openNote(path string) {
 
 }
 
-func printTodaysNote() {
-	printNote(todayFilePath())
-}
-
-func printNote(path string) {
-	out := getNoteContent(path)
-
-	// out, err := glamour.Render(string(b), "dark")
-	// cobra.CheckErr(err)
-
-	fmt.Print(out)
-}
 func getNoteContent(path string) string {
 	b, err := os.ReadFile(path)
 	cobra.CheckErr(err)
