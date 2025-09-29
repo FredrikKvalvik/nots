@@ -27,7 +27,7 @@ func ListCmd() *cobra.Command {
 		Aliases:           []string{"ls"},
 
 		Run: func(cmd *cobra.Command, args []string) {
-			dirPath := cfg.Dir
+			dirPath := cfg.RootDir
 			if len(args) > 0 {
 				dirPath = filepath.Join(dirPath, args[0])
 			}
@@ -45,7 +45,7 @@ func ListCmd() *cobra.Command {
 			var str strings.Builder
 			if fullPath {
 				for _, path := range entries {
-					fmt.Fprintf(&str, "%s/%s\n", cfg.Dir, path.String())
+					fmt.Fprintf(&str, "%s/%s\n", cfg.RootDir, path.String())
 				}
 			} else {
 				for _, path := range entries {

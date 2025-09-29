@@ -10,7 +10,7 @@ import (
 
 func DirListCompleter(cfg *config.Config) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		list, err := lister.ListPathsRecursive(cfg.Dir, true)
+		list, err := lister.ListPathsRecursive(cfg.RootDir, true)
 		cobra.CheckErr(err)
 		return directoryList(list, toComplete), cobra.ShellCompDirectiveDefault
 	}

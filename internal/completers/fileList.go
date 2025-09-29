@@ -15,7 +15,7 @@ func FileListCompleter(cfg *config.Config) func(cmd *cobra.Command, args []strin
 }
 
 func fileList(cfg *config.Config) []string {
-	list, err := lister.ListPathsRecursive(cfg.Dir, false)
+	list, err := lister.ListPathsRecursive(cfg.RootDir, false)
 	cobra.CheckErr(err)
 
 	completions := []string{}

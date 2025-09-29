@@ -6,6 +6,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -33,6 +34,10 @@ func openNote(path string) {
 		cobra.CheckErr(tpl.Execute(f, &TplArgs{Date: todayDate()}))
 		cobra.CheckErr(f.Close())
 	}
+
+	slog.Debug("opening note", "path", path)
+	currentState.PreviousNote = &path
+	cobra.CheckErr(currentState.Save())
 
 	editorName := os.ExpandEnv(cfg.EditorCommand)
 	command := must(exec.LookPath(editorName))
@@ -68,7 +73,7 @@ func todayFilePath() string {
 }
 
 func filePath(name string) string {
-	return fmt.Sprintf("%s/%s", cfg.Dir, name)
+	return fmt.Sprintf("%s/%s", cfg.RootDir, name)
 
 }
 

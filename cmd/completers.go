@@ -8,7 +8,7 @@ import (
 )
 
 func fileListCompleter(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	list, err := lister.ListPathsRecursive(cfg.Dir, false)
+	list, err := lister.ListPathsRecursive(cfg.RootDir, false)
 	cobra.CheckErr(err)
 
 	completions := []string{}
@@ -22,7 +22,7 @@ func fileListCompleter(cmd *cobra.Command, args []string, toComplete string) ([]
 }
 
 func dirListCompleter(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	list, err := lister.ListPathsRecursive(cfg.Dir, false)
+	list, err := lister.ListPathsRecursive(cfg.RootDir, false)
 	cobra.CheckErr(err)
 
 	toCompletePath := lister.NewPath(toComplete)

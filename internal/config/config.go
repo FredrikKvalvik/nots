@@ -13,10 +13,14 @@ import (
 type Config struct {
 	EditorCommand string `toml:"editor"`
 	Pager         string `toml:"viewer"`
-	Dir           string `toml:"notes-dir"`
+	RootDir       string `toml:"notes-dir"`
 
 	DailyNameTemplate string `toml:"daily-name-template"`
 	DailyDirName      string `toml:"daily-dir-name"`
+
+	// could be nil, if so, default template defined in code
+	// NOTE: not implemented
+	SelectedTemplate *string `toml:"default-template"`
 }
 
 func Load() (*Config, error) {
@@ -28,10 +32,10 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
-	conf.Dir = resolveNotsDirPath(conf.Dir)
+	conf.RootDir = resolveNotsDirPath(conf.RootDir)
 
 	// create directories to make sure they are there
-	err = createNotsDirectory(conf.Dir)
+	err = createNotsDirectory(conf.RootDir)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +57,7 @@ func newDefaultConfig() Config {
 	return Config{
 		EditorCommand: "$EDITOR",
 		Pager:         "$PAGER",
-		Dir:           dirpath,
+		RootDir:       dirpath,
 
 		DailyNameTemplate: "yyyy-mm-dd",
 		DailyDirName:      "", // default to root

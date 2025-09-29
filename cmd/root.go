@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/fredrikkvalvik/nots/internal/config"
+	"github.com/fredrikkvalvik/nots/internal/state"
 	"github.com/fredrikkvalvik/nots/internal/util"
 	"github.com/spf13/cobra"
 	"gitlab.com/greyxor/slogor"
@@ -21,7 +22,8 @@ var (
 	viewContent   = false
 	debug         = false
 
-	cfg *config.Config
+	cfg          *config.Config
+	currentState *state.State
 )
 
 func init() {
@@ -38,10 +40,12 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "prints debug messages")
 
 	// config overrides
-	rootCmd.PersistentFlags().StringVar(&cfg.Dir, "path", cfg.Dir, "Override nots-dir path")
+	rootCmd.PersistentFlags().StringVar(&cfg.RootDir, "path", cfg.RootDir, "Override nots-dir path")
 	rootCmd.PersistentFlags().StringVar(&cfg.EditorCommand, "editor", cfg.EditorCommand, "override editor setting")
 	rootCmd.PersistentFlags().StringVar(&cfg.Pager, "viewer", cfg.Pager, "override viewer setting")
 
+	currentState, err = state.Load(cfg)
+	cobra.CheckErr(err)
 }
 
 // rootCmd represents the base command when called without any subcommands
@@ -106,7 +110,7 @@ func rootHandleCmds(_ *cobra.Command, _ []string) {
 		return
 
 	case printFileDir:
-		_, _ = fmt.Fprintln(os.Stdout, cfg.Dir)
+		_, _ = fmt.Fprintln(os.Stdout, cfg.RootDir)
 		return
 
 	default:
@@ -131,8 +135,6 @@ func setupLogger() {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		panic(err)
-	}
+	cobra.CheckErr(rootCmd.Execute())
+	cobra.CheckErr(currentState.Save())
 }
