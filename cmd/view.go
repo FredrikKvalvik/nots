@@ -17,7 +17,7 @@ func init() {
 }
 
 func ViewCmd() *cobra.Command {
-	vh := viewHandler{}
+	var toStdOut bool
 
 	cmd := &cobra.Command{
 		Use:               "view [file]",
@@ -29,37 +29,36 @@ func ViewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			if util.HasStdinData() {
-				vh.viewHandleStdin(cmd, args)
+				fmt.Println("not implemented")
 				return
 			} else if len(args) == 1 {
-				vh.viewHandleCmd(cmd, args)
-				return
+				path := strings.TrimSpace(args[0])
+
+				if !util.IsFilePath(path) {
+					cobra.CheckErr(fmt.Errorf("expects a valid file name, got=%s", path))
+				}
+
+				if toStdOut {
+					content := getNoteContent(path)
+					fmt.Print(content)
+					return
+				} else {
+					viewNote(path)
+				}
 			}
 
 			fmt.Println("invalid use")
-			cmd.Help()
+			_ = cmd.Help()
 		},
 	}
-	cmd.Flags().BoolVar(&vh.toStdOut, "stdout", false, "prints the file to stdout instead of pager")
+	cmd.Flags().BoolVar(&toStdOut, "stdout", false, "prints the file to stdout instead of pager")
 
 	return cmd
 }
 
-type viewHandler struct {
-	toStdOut bool
-}
-
-func (vh *viewHandler) viewHandleStdin(cmd *cobra.Command, args []string) {
-
-}
-
-func (vh *viewHandler) viewHandleCmd(_ *cobra.Command, args []string) {
-	filename := strings.TrimSpace(args[0])
-
-	if !util.IsFilePath(filename) {
-		cobra.CheckErr(fmt.Errorf("expects a valid file name, got=%s", filename))
-	}
-	filePath := filePath(filename)
+// open viewer and view file
+func viewNote(path string) {
+	filePath := filePath(path)
 
 	ok, err := util.FileExists(filePath)
 	cobra.CheckErr(err)
@@ -67,14 +66,8 @@ func (vh *viewHandler) viewHandleCmd(_ *cobra.Command, args []string) {
 		cobra.CheckErr(fmt.Errorf("no note with name=%s", filePath))
 	}
 
-	content := getNoteContent(filePath)
-
-	if vh.toStdOut {
-		fmt.Print(content)
-		return
-	}
-
 	spawnViewer(filePath)
+
 }
 
 func spawnViewer(filepath string) {

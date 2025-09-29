@@ -13,6 +13,7 @@ func init() {
 }
 
 func PreviousCmd() *cobra.Command {
+	var view bool
 
 	cmd := &cobra.Command{
 		Use:   "previous",
@@ -33,9 +34,18 @@ func PreviousCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			openNote(*s.PreviousNote)
+			switch true {
+			case view:
+				viewNote(*s.PreviousNote)
+
+			default:
+				openNote(*s.PreviousNote)
+			}
+
 		},
 	}
+
+	cmd.Flags().BoolVar(&view, "view", view, "view previous opened note")
 
 	return cmd
 }
