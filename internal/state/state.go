@@ -2,6 +2,7 @@
 package state
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -44,12 +45,13 @@ func Load(cfg *config.Config) (*State, error) {
 func (s *State) Save() error {
 	slog.Debug("saving state", "prev_file", s.PreviousNote)
 
-	f, err := os.OpenFile(stateFileName(s.cfg.RootDir), os.O_WRONLY, 0)
+	var buf bytes.Buffer
+	err := toml.NewEncoder(&buf).Encode(s)
 	if err != nil {
 		return err
 	}
 
-	err = toml.NewEncoder(f).Encode(s)
+	err = os.WriteFile(stateFileName(s.cfg.RootDir), buf.Bytes(), 0644)
 	if err != nil {
 		return err
 	}

@@ -25,7 +25,13 @@ func listAllRecursive(path string, includeDirs bool) ([]Path, error) {
 
 		p = strings.TrimPrefix(p, path+"/")
 
-		paths = append(paths, NewPath(p))
+		lpath := NewPath(p)
+		// if the file is hidden, we ignore it
+		if strings.HasPrefix(lpath[len(lpath)-1], ".") {
+			slog.Debug("ignore hidden file", "path", p)
+			return nil
+		}
+		paths = append(paths, lpath)
 		return nil
 	})
 
@@ -43,7 +49,14 @@ func ListPaths(path string, includeDirs bool) ([]Path, error) {
 		if ent.IsDir() && !includeDirs {
 			continue
 		}
-		names = append(names, NewPath(ent.Name()))
+
+		lpath := NewPath(ent.Name())
+		if strings.HasPrefix(lpath[len(lpath)-1], ".") {
+			slog.Debug("ignore hidden file", "path", lpath.String())
+			continue
+		}
+
+		names = append(names, lpath)
 	}
 
 	slog.Info("list-dir", "list", names)

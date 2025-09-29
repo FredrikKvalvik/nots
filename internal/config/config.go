@@ -21,6 +21,12 @@ type Config struct {
 	// could be nil, if so, default template defined in code
 	// NOTE: not implemented
 	SelectedTemplate *string `toml:"default-template"`
+
+	// default open mode set how the default command resolves opening notes.
+	// currently supports:
+	//
+	// "today" | "previous"
+	DefaultOpenMode string `toml:"default-open-mode"`
 }
 
 func Load() (*Config, error) {
@@ -33,6 +39,11 @@ func Load() (*Config, error) {
 	}
 
 	conf.RootDir = resolveNotsDirPath(conf.RootDir)
+
+	err = validateConfig(&conf)
+	if err != nil {
+		return nil, err
+	}
 
 	// create directories to make sure they are there
 	err = createNotsDirectory(conf.RootDir)
@@ -61,6 +72,8 @@ func newDefaultConfig() Config {
 
 		DailyNameTemplate: "yyyy-mm-dd",
 		DailyDirName:      "", // default to root
+		SelectedTemplate:  nil,
+		DefaultOpenMode:   "today",
 	}
 }
 
@@ -84,6 +97,7 @@ func resolveNotsDirPath(path string) string {
 
 	return path
 }
+
 func createNotsDirectory(path string) error {
 	return os.MkdirAll(path, os.ModePerm)
 }

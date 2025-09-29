@@ -36,6 +36,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
 	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
 	rootCmd.Flags().BoolVar(&viewContent, "view", false, "view the contents of todays note")
+	rootCmd.Flags().StringVar(&cfg.DefaultOpenMode, "open-mode", cfg.DefaultOpenMode, "sets the open mode for base nots command")
 
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "prints debug messages")
 
@@ -95,18 +96,30 @@ func rootHandleStdin(_ *cobra.Command, _ []string) {
 }
 
 func rootHandleCmds(_ *cobra.Command, _ []string) {
+	var path string
+	switch cfg.DefaultOpenMode {
+	case "today":
+		path = todayFilePath()
+	case "previous":
+		if currentState.PreviousNote == nil {
+			path = todayFilePath()
+		} else {
+			path = *currentState.PreviousNote
+		}
+	}
 	switch true {
 
 	case viewContent:
-		spawnViewer(todayFilePath())
+		spawnViewer(path)
 		return
 
 	case printContent:
-		printTodaysNote()
+		content := getNoteContent(path)
+		fmt.Print(content)
 		return
 
 	case printFilePath:
-		_, _ = fmt.Fprintln(os.Stdout, todayFilePath())
+		_, _ = fmt.Fprintln(os.Stdout, path)
 		return
 
 	case printFileDir:
@@ -114,7 +127,7 @@ func rootHandleCmds(_ *cobra.Command, _ []string) {
 		return
 
 	default:
-		openTodaysNote()
+		openNote(path)
 	}
 }
 func setupLogger() {
