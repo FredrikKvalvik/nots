@@ -1,7 +1,7 @@
 package completers
 
 import (
-	"path/filepath"
+	"slices"
 
 	"github.com/fredrikkvalvik/nots/internal/config"
 	"github.com/fredrikkvalvik/nots/internal/lister"
@@ -17,27 +17,39 @@ func DirListCompleter(cfg *config.Config) func(cmd *cobra.Command, args []string
 }
 
 func directoryList(list []lister.Path, toComplete string) []string {
-	// toCompletePath := lister.NewPath(toComplete)
+	toCompletePath := lister.NewPath(toComplete)
+	toCompleteLength := len(toCompletePath)
 
 	completions := []string{}
 
 	for _, path := range list {
-		p := path.String()
-		p = filepath.Dir(p)
-		if p == "." {
+		// remove the file name, if one is there
+		if len(path) < toCompleteLength {
 			continue
 		}
 
-		// skip the current directory
+		// remove the file at the end of the path, if one is there
+		dir := path.PopFile()
+		// this means we removed a file and are left with "nothing", meaning the file was at root. move on.
+		if len(dir) == 0 {
+			continue
+		}
 
-		// path = path.Pop()
-		completions = append(completions, p)
+		// if toComplete is empty, we simple add all paths first item
+		if toCompleteLength == 0 {
+			completions = append(completions, dir[0])
+			continue
+		}
 
-		// if path.ContainsSubset(toCompletePath) {
-		// 	completions = append(completions, filepath.Dir(path.String()))
-		// }
+		// if we are further down, we need to find out if the toComplete is a subPath of
+		// the path we are comparing. then we return the item of the same index as
+		// the last element in toCompletePath
+		if dir.ContainsSubset(toCompletePath) {
+			completions = append(completions, dir[toCompleteLength-1])
+			continue
+		}
 	}
 
-	return completions
+	return slices.Compact(completions)
 
 }

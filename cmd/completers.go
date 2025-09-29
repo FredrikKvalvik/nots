@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"log/slog"
 	"path/filepath"
 
 	"github.com/fredrikkvalvik/nots/internal/lister"
@@ -18,7 +17,6 @@ func fileListCompleter(cmd *cobra.Command, args []string, toComplete string) ([]
 		p := path.String()
 		completions = append(completions, p)
 	}
-	slog.Debug("completer running...", "result", completions)
 
 	return completions, cobra.ShellCompDirectiveDefault
 }

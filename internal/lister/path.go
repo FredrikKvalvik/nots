@@ -1,6 +1,10 @@
 package lister
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/fredrikkvalvik/nots/internal/util"
+)
 
 type Path []string
 
@@ -40,6 +44,14 @@ func (p Path) IsEqual(path Path) bool {
 // return a new path with the last element removed
 func (p Path) Pop() Path {
 	return p[:len(p)-1]
+}
+
+// returns a new path where the file name is removed. if no file is there, do nothing
+func (p Path) PopFile() Path {
+	if util.IsFileName(p[len(p)-1]) {
+		return p.Pop()
+	}
+	return p
 }
 
 // return true if p1 and p2 are equal

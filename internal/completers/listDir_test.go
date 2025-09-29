@@ -33,11 +33,21 @@ func TestListDir(t *testing.T) {
 			ToComplete: "",
 			Input: []lister.Path{
 				{"file.md"},
-				{"dir", "file.md"},
 				{"dir2"},
 			},
 			Out: []string{
-				"dir",
+				"dir2",
+			},
+		},
+		{
+			ToComplete: "dir",
+			Input: []lister.Path{
+				{"file.md"},
+				{"dir2"},
+				{"dir/testing/text.md"},
+			},
+			Out: []string{
+				"testing",
 			},
 		},
 	}
