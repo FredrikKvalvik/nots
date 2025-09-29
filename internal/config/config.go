@@ -15,7 +15,8 @@ type Config struct {
 	Pager         string `toml:"viewer"`
 	Dir           string `toml:"notes-dir"`
 
-	NameTemplate string
+	DailyNameTemplate string `toml:"daily-name-template"`
+	DailyDirName      string `toml:"daily-dir-name"`
 }
 
 func Load() *Config {
@@ -50,7 +51,8 @@ func newDefaultConfig() Config {
 		Pager:         "$PAGER",
 		Dir:           dirpath,
 
-		NameTemplate: "yyyy-mm-dd",
+		DailyNameTemplate: "yyyy-mm-dd",
+		DailyDirName:      "", // default to root
 	}
 }
 

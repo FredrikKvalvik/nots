@@ -79,6 +79,8 @@ func todayDate() string {
 func todayFileName() string {
 	date := todayDate()
 
+	// TODO: implement today-file template parsing
+
 	return fmt.Sprintf("%s.md", date)
 }
 
