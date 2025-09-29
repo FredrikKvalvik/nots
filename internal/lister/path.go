@@ -46,9 +46,22 @@ func (p Path) Pop() Path {
 	return p[:len(p)-1]
 }
 
+// appends name to Path. Only legal when path is not a filePath (last element is a file name). Will panic if IsFilePath == true
+func (p Path) Append(name string) Path {
+	if p.IsFilePath() {
+		panic("trying to append name to filepath is not valid")
+	}
+	return append(p, name)
+}
+
+// return true if the last element in Path is a valid filename (ending in .md)
+func (p Path) IsFilePath() bool {
+	return util.IsFileName(p[len(p)-1])
+}
+
 // returns a new path where the file name is removed. if no file is there, do nothing
 func (p Path) PopFile() Path {
-	if util.IsFileName(p[len(p)-1]) {
+	if p.IsFilePath() {
 		return p.Pop()
 	}
 	return p

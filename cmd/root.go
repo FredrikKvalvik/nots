@@ -25,6 +25,11 @@ var (
 )
 
 func init() {
+	var err error
+	cfg, err = config.Load()
+
+	cobra.CheckErr(err)
+
 	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
 	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
 	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
@@ -32,7 +37,11 @@ func init() {
 
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "prints debug messages")
 
-	cfg = config.Load()
+	// config overrides
+	rootCmd.PersistentFlags().StringVar(&cfg.Dir, "path", cfg.Dir, "Override nots-dir path")
+	rootCmd.PersistentFlags().StringVar(&cfg.EditorCommand, "editor", cfg.EditorCommand, "override editor setting")
+	rootCmd.PersistentFlags().StringVar(&cfg.Pager, "viewer", cfg.Pager, "override viewer setting")
+
 }
 
 // rootCmd represents the base command when called without any subcommands
@@ -124,6 +133,6 @@ func setupLogger() {
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 }

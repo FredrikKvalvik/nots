@@ -19,20 +19,24 @@ type Config struct {
 	DailyDirName      string `toml:"daily-dir-name"`
 }
 
-func Load() *Config {
+func Load() (*Config, error) {
 	filePath := resolveConfigPath()
 
 	var conf = newDefaultConfig()
 	_, err := toml.DecodeFile(filePath, &conf)
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	conf.Dir = resolveNotsDirPath(conf.Dir)
 
 	// create directories to make sure they are there
 	err = createNotsDirectory(conf.Dir)
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 
-	return &conf
+	return &conf, nil
 }
 
 // currenlty only checks ~/.config/nots/nots.toml
