@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/fredrikkvalvik/nots/internal/state"
 	"github.com/spf13/cobra"
@@ -23,9 +24,6 @@ func PreviousCmd() *cobra.Command {
 		Aliases: []string{"p", "prev"},
 
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: implement logic for opening the previous note
-			// It should store its state in nots root dir.
-
 			s, err := state.Load(cfg)
 			cobra.CheckErr(err)
 
@@ -34,12 +32,14 @@ func PreviousCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
+			absoulutePath := filepath.Clean(*s.PreviousNote)
+
 			switch true {
 			case view:
-				viewNote(*s.PreviousNote)
+				viewNote(absoulutePath)
 
 			default:
-				openNote(*s.PreviousNote)
+				openNote(absoulutePath)
 			}
 
 		},

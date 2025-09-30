@@ -44,7 +44,7 @@ func OpenCmd() *cobra.Command {
 			if !util.IsFilePath(input) {
 				cobra.CheckErr(fmt.Errorf("invalid file path: %s", input))
 			}
-			fp := filePath(input)
+			fp := absolutePath(input)
 
 			openNote(fp)
 

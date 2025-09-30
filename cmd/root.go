@@ -83,7 +83,7 @@ func rootHandleStdin(_ *cobra.Command, _ []string) {
 	fileName = strings.TrimSpace(fileName)
 
 	if util.IsFileName(fileName) {
-		openNote(filePath(fileName))
+		openNote(absolutePath(fileName))
 		return
 	}
 
@@ -96,30 +96,30 @@ func rootHandleStdin(_ *cobra.Command, _ []string) {
 }
 
 func rootHandleCmds(_ *cobra.Command, _ []string) {
-	var path string
+	var absPath string
 	switch cfg.DefaultOpenMode {
 	case "today":
-		path = todayFilePath()
+		absPath = todayFilePath()
 	case "previous":
 		if currentState.PreviousNote == nil {
-			path = todayFilePath()
+			absPath = todayFilePath()
 		} else {
-			path = *currentState.PreviousNote
+			absPath = *currentState.PreviousNote
 		}
 	}
 	switch true {
 
 	case viewContent:
-		spawnViewer(path)
+		viewNote(absPath)
 		return
 
 	case printContent:
-		content := getNoteContent(path)
+		content := getNoteContent(absPath)
 		fmt.Print(content)
 		return
 
 	case printFilePath:
-		_, _ = fmt.Fprintln(os.Stdout, path)
+		_, _ = fmt.Fprintln(os.Stdout, absPath)
 		return
 
 	case printFileDir:
@@ -127,7 +127,7 @@ func rootHandleCmds(_ *cobra.Command, _ []string) {
 		return
 
 	default:
-		openNote(path)
+		openNote(absPath)
 	}
 }
 func setupLogger() {

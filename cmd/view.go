@@ -43,7 +43,7 @@ func ViewCmd() *cobra.Command {
 					fmt.Print(content)
 					return
 				} else {
-					viewNote(path)
+					viewNote(absolutePath(path))
 				}
 			}
 
@@ -57,16 +57,15 @@ func ViewCmd() *cobra.Command {
 }
 
 // open viewer and view file
-func viewNote(path string) {
-	filePath := filePath(path)
+func viewNote(absoulutePath string) {
 
-	ok, err := util.FileExists(filePath)
+	ok, err := util.FileExists(absoulutePath)
 	cobra.CheckErr(err)
 	if !ok {
-		cobra.CheckErr(fmt.Errorf("no note with name=%s", filePath))
+		cobra.CheckErr(fmt.Errorf("no note with name=%s", absoulutePath))
 	}
 
-	spawnViewer(filePath)
+	spawnViewer(absoulutePath)
 
 }
 
