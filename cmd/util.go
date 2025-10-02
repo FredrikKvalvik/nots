@@ -40,6 +40,9 @@ func spawnEditor(path string) {
 
 	env := os.Environ()
 
+	err := os.Chdir(cfg.RootDir)
+	cobra.CheckErr(err)
+
 	if err := syscall.Exec(command, []string{command, path}, env); err != nil {
 		cobra.CheckErr(err)
 	}
