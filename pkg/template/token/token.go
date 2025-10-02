@@ -39,6 +39,7 @@ const (
 
 // item represents a token returned from the scanner.
 type Token struct {
-	Type TokenType // Type, such as itemNumber.
-	Val  string    // Value, such as "23.2".
+	Type       TokenType // Type, such as itemNumber.
+	Val        string    // Value, such as "23.2".
+	Start, End int
 }

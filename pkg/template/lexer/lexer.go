@@ -16,9 +16,9 @@ const (
 	eof = rune(0)
 )
 
-type stateFn func(l *Lex) stateFn
+type stateFn func(l *Lexer) stateFn
 
-type Lex struct {
+type Lexer struct {
 	Name  string           // used only for error reports.
 	input string           // the string being scanned.
 	start int              // start position of this item.
@@ -27,8 +27,8 @@ type Lex struct {
 	items chan token.Token // channel of scanned items.
 }
 
-func NewLex(name, input string) *Lex {
-	l := &Lex{
+func NewLex(name, input string) *Lexer {
+	l := &Lexer{
 		Name:  name,
 		input: input,
 		items: make(chan token.Token, 2),
@@ -37,7 +37,7 @@ func NewLex(name, input string) *Lex {
 	return l
 }
 
-func (l *Lex) run() {
+func (l *Lexer) run() {
 	for state := lexText; state != nil; {
 		state = state(l)
 	}
@@ -46,22 +46,24 @@ func (l *Lex) run() {
 }
 
 // return the next token
-func (l *Lex) NextToken() (item token.Token) {
+func (l *Lexer) NextToken() (item token.Token) {
 	return <-l.items
 }
 
 // emit a new token to ch
-func (l *Lex) emit(t token.TokenType) {
+func (l *Lexer) emit(t token.TokenType) {
 	i := token.Token{
-		Type: t,
-		Val:  l.input[l.start:l.pos],
+		Type:  t,
+		Val:   l.input[l.start:l.pos],
+		Start: l.start,
+		End:   l.pos,
 	}
 	l.items <- i
 	l.start = l.pos
 }
 
 // next returns the next rune in the input.
-func (l *Lex) next() (char rune) {
+func (l *Lexer) next() (char rune) {
 	if l.pos >= len(l.input) {
 		l.width = 0
 		return eof
@@ -74,20 +76,20 @@ func (l *Lex) next() (char rune) {
 
 // backup steps back one rune.
 // Can be called only once per call of next.
-func (l *Lex) backup() {
+func (l *Lexer) backup() {
 	l.pos -= l.width
 }
 
 // peek returns but does not consume
 // the next rune in the input.
-func (l *Lex) peek() rune {
+func (l *Lexer) peek() rune {
 	char := l.next()
 	l.backup()
 	return char
 }
 
 // emits an error and returns nil, stopping the lexer
-func (l *Lex) errorf(str string, v ...any) stateFn {
+func (l *Lexer) errorf(str string, v ...any) stateFn {
 	l.items <- token.Token{
 		Type: token.TokenTypeError,
 		Val:  fmt.Sprintf(str, v...),
@@ -96,13 +98,13 @@ func (l *Lex) errorf(str string, v ...any) stateFn {
 }
 
 // ignore current char
-func (l *Lex) ignore() {
+func (l *Lexer) ignore() {
 	l.start = l.pos
 }
 
 // accept consumes the next rune
 // if it's from the valid set.
-func (l *Lex) accept(valid string) bool {
+func (l *Lexer) accept(valid string) bool {
 	if strings.ContainsRune(valid, l.next()) {
 		return true
 	}
@@ -111,13 +113,13 @@ func (l *Lex) accept(valid string) bool {
 }
 
 // acceptRun consumes a run of runes from the valid set.
-func (l *Lex) acceptRun(valid string) {
+func (l *Lexer) acceptRun(valid string) {
 	for strings.ContainsRune(valid, l.next()) {
 	}
 	l.backup()
 }
 
-func lexText(l *Lex) stateFn {
+func lexText(l *Lexer) stateFn {
 	for {
 		if strings.HasPrefix(l.input[l.pos:], leftMeta) {
 			if l.pos > l.start {
@@ -138,18 +140,18 @@ func lexText(l *Lex) stateFn {
 	return nil                 // Stop the run loop
 }
 
-func lexLeftMeta(l *Lex) stateFn {
+func lexLeftMeta(l *Lexer) stateFn {
 	l.pos += len(leftMeta)
 	l.emit(token.TokenTypeLMeta)
 	return lexInsideAction // we are now iside an expression {{ HERE }}
 }
-func lexRightMeta(l *Lex) stateFn {
+func lexRightMeta(l *Lexer) stateFn {
 	l.pos += len(rightMeta)
 	l.emit(token.TokenTypeRMeta)
 	return lexText // we are now done with expression {{ ... }} HERE
 }
 
-func lexInsideAction(l *Lex) stateFn {
+func lexInsideAction(l *Lexer) stateFn {
 	for {
 		if strings.HasPrefix(l.input[l.pos:], rightMeta) {
 			return lexRightMeta
@@ -186,7 +188,7 @@ func lexInsideAction(l *Lex) stateFn {
 	}
 }
 
-func lexNumber(l *Lex) stateFn {
+func lexNumber(l *Lexer) stateFn {
 	digits := "0123456789"
 	l.acceptRun(digits)
 
@@ -198,7 +200,7 @@ func lexNumber(l *Lex) stateFn {
 	return lexInsideAction
 }
 
-func lexStringLiteral(l *Lex) stateFn {
+func lexStringLiteral(l *Lexer) stateFn {
 	// there must be an opening '"' for a string to be valid
 	if !l.accept(`"`) {
 		return l.errorf("expected opening string rune")
@@ -221,7 +223,7 @@ func lexStringLiteral(l *Lex) stateFn {
 	return lexInsideAction
 }
 
-func lexIdentifier(l *Lex) stateFn {
+func lexIdentifier(l *Lexer) stateFn {
 	valid := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	if !l.accept(valid) {
 		return l.errorf("unexpected character=%s", string(l.peek()))
