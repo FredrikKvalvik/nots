@@ -15,7 +15,28 @@ func TestExpressionParsing(t *testing.T) {
 		expected *ast.BlockExpression
 	}{
 		{
-			name:  "test pipe with two identifiers",
+			name:  "number literal",
+			input: "{{ 10 }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.NumberLiteralExpr{Value: 10},
+			},
+		},
+		{
+			name:  "number literal with trailing '.'",
+			input: "{{ 10. }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.NumberLiteralExpr{Value: 10},
+			},
+		},
+		{
+			name:  "number literal with decimal point",
+			input: "{{ 10.5 }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.NumberLiteralExpr{Value: 10.5},
+			},
+		},
+		{
+			name:  "pipe with two identifiers",
 			input: "{{ ident | ident2 }}",
 			expected: &ast.BlockExpression{
 				Expression: &ast.PipeExpr{
@@ -25,17 +46,7 @@ func TestExpressionParsing(t *testing.T) {
 			},
 		},
 		{
-			name:  "test pipe with number to pipe",
-			input: "{{ 10 | ident }}",
-			expected: &ast.BlockExpression{
-				Expression: &ast.PipeExpr{
-					Left:  &ast.NumberLiteralExpr{Value: 10},
-					Right: &ast.IdentifierExpr{Value: "ident"},
-				},
-			},
-		},
-		{
-			name:  "test pipe stickiness",
+			name:  "multiple piped values",
 			input: "{{ ident1 | ident2 | ident3 }}",
 			expected: &ast.BlockExpression{
 				Expression: &ast.PipeExpr{

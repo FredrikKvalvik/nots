@@ -150,6 +150,7 @@ func parseText(p *Parser) stateFn {
 		case token.TokenTypeEOF:
 			return nil
 		case token.TokenTypeError:
+			p.errorf("lexing error: %s", p.curToken.Val)
 			// TODO: report the error somewhere
 			return nil
 
