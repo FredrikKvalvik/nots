@@ -1,0 +1,117 @@
+package eval
+
+import (
+	"bytes"
+	"fmt"
+
+	"github.com/fredrikkvalvik/nots/pkg/template/ast"
+)
+
+type Env struct {
+	symbols map[string]Symbol
+}
+
+func (env *Env) GetSymbol(name string) Symbol {
+	return env.symbols[name]
+}
+
+type Evaluator struct {
+	// symbol table
+	env      *Env
+	template *ast.Template
+
+	errors []error
+
+	out bytes.Buffer
+}
+
+func New(template *ast.Template, env *Env) *Evaluator {
+	e := &Evaluator{
+		env:      env,
+		template: template,
+	}
+
+	return e
+}
+
+func (e *Evaluator) Execute() (string, error) {
+	// reset out if template is run multiple times
+	e.reset()
+
+	for _, block := range e.template.Blocks {
+		switch b := block.(type) {
+		case *ast.BlockText:
+			e.emit(b.Text)
+
+		case *ast.BlockExpression:
+			out, err := e.eval(b.Expression)
+			if err != nil {
+				return "", err
+			}
+			e.emit(out.ToString())
+		}
+	}
+
+	return e.out.String(), nil
+}
+
+// emit add the text to the output
+func (e *Evaluator) emit(text string) {
+	e.out.WriteString(text)
+}
+
+// resets the output. useful if a template is evaluated multiple times
+func (e *Evaluator) reset() {
+	e.out = bytes.Buffer{}
+}
+
+func (e *Evaluator) errorf(msg string, v ...any) {
+	e.errors = append(e.errors, fmt.Errorf(msg, v...))
+}
+
+// evalauates an expression to a string
+func (e *Evaluator) eval(expr ast.Expr) (Object, error) {
+	switch ex := expr.(type) {
+	case *ast.NumberLiteralExpr:
+		return &ObjectNumber{Val: ex.Value}, nil
+
+	case *ast.StringLiteralExpr:
+		return &ObjectString{Val: ex.Value}, nil
+
+	case *ast.IdentifierExpr:
+		symbol := e.env.GetSymbol(ex.Value)
+		if symbol == nil {
+			return nil, fmt.Errorf("failed to resolve symbol=%s", ex.Value)
+		}
+		return &ObjectSymbol{Val: symbol}, nil
+
+	case *ast.PipeExpr:
+		return e.evalPipe(ex)
+
+	default:
+		panic("unexpected node: " + ex.String())
+	}
+}
+
+func (e *Evaluator) evalPipe(n *ast.PipeExpr) (Object, error) {
+	lo, err := e.eval(n.Left)
+	if err != nil {
+		return nil, err
+	}
+	// the right must be an indentifier to be a valid filter
+	ident, ok := n.Right.(*ast.IdentifierExpr)
+	if !ok {
+		return nil, fmt.Errorf("expected Identifier, got %T", n.Right)
+	}
+	symbol := e.env.GetSymbol(ident.Value)
+	if symbol == nil {
+		return nil, fmt.Errorf("failed to resolve filter with name=%s", ident.Value)
+	}
+
+	filter, ok := symbol.(*SymbolFilter)
+	if !ok {
+		return nil, fmt.Errorf("symbol=%s is not a valid filter", ident.Value)
+	}
+
+	return filter.Fn(lo)
+}

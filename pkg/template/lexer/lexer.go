@@ -224,7 +224,7 @@ func lexStringLiteral(l *Lexer) stateFn {
 }
 
 func lexIdentifier(l *Lexer) stateFn {
-	valid := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	valid := "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	if !l.accept(valid) {
 		return l.errorf("unexpected character=%s", string(l.peek()))
 	}
@@ -240,7 +240,7 @@ func isSpace(r rune) bool {
 }
 
 func isAlpha(r rune) bool {
-	valid := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	valid := "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	return strings.ContainsRune(valid, r)
 }
 
