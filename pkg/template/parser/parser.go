@@ -59,6 +59,7 @@ func New(l *lexer.Lexer) *Parser {
 	// PREFIX PARSLETS
 	p.registerPrefix(token.TokenTypeIdentifier, p.parseIdentifier)
 	p.registerPrefix(token.TokenTypeNumber, p.parseNumberLiteral)
+	p.registerPrefix(token.TokenTypeString, p.parseStringLiteral)
 
 	// INFIX PARSLETS
 	p.registerInfix(token.TokenTypePipe, p.parsePipeExpression)

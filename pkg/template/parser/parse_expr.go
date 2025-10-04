@@ -87,6 +87,27 @@ func (p *Parser) parseNumberLiteral() ast.Expr {
 	return i
 }
 
+func (p *Parser) parseStringLiteral() ast.Expr {
+	// {{ string ... }}
+	//    ^
+	if !p.curTokenIs(token.TokenTypeString) {
+		p.expectError(token.TokenTypeString)
+		return nil
+	}
+
+	// remove the leading and trailing '"'
+	runes := []rune(p.curToken.Val)
+	str := string(runes[1 : len(runes)-1])
+
+	// {{ string ... }}
+	//         ^
+	i := &ast.StringLiteralExpr{
+		Value: str,
+	}
+
+	return i
+}
+
 func (p *Parser) parsePipeExpression(left ast.Expr) ast.Expr {
 	// {{ left | right }}
 	//         ^

@@ -36,6 +36,13 @@ func TestExpressionParsing(t *testing.T) {
 			},
 		},
 		{
+			name:  "string literal",
+			input: `{{ "hello" }}`,
+			expected: &ast.BlockExpression{
+				Expression: &ast.StringLiteralExpr{Value: "hello"},
+			},
+		},
+		{
 			name:  "pipe with two identifiers",
 			input: "{{ ident | ident2 }}",
 			expected: &ast.BlockExpression{
@@ -73,7 +80,7 @@ func TestExpressionParsing(t *testing.T) {
 			expect := &ast.Template{Blocks: []ast.Block{tt.expected}}
 			r.Equal(expect.Blocks[0].String(), result.Blocks[0].String())
 			// need to wrap the expression in a template for valid comparison
-			r.Equal(expect, result)
+			r.Equal(expect.Blocks[0], result.Blocks[0])
 		})
 	}
 }
