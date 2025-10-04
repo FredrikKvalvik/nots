@@ -13,9 +13,9 @@ func (i Token) String() string {
 		return i.Val
 	}
 	if len(i.Val) > 10 {
-		return fmt.Sprintf("%.10q...", i.Val)
+		return fmt.Sprintf("[%s] %.10q...", i.Type, i.Val)
 	}
-	return fmt.Sprintf("%q", i.Val)
+	return fmt.Sprintf("[%s] %q", i.Type, i.Val)
 }
 
 const (
