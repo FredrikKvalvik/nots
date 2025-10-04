@@ -88,16 +88,17 @@ func (p *Parser) parseNumberLiteral() ast.Expr {
 }
 
 func (p *Parser) parsePipeExpression(left ast.Expr) ast.Expr {
-	pipe := &ast.PipeExpr{Left: left}
-
 	// {{ left | right }}
 	//         ^
+	pipe := &ast.PipeExpr{Left: left}
+	pipeStick := p.curStickiness()
+
 	if !p.expectCur(token.TokenTypePipe) {
 		p.expectError(token.TokenTypePipe)
 		return nil
 	}
 	// {{ left | right }}
-	//         ^
-	pipe.Right = p.parseExpression(p.curStickiness())
+	//           ^
+	pipe.Right = p.parseExpression(pipeStick)
 	return pipe
 }
