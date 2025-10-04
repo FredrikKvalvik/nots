@@ -34,6 +34,19 @@ func TestExpressionParsing(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:  "test pipe stickiness",
+			input: "{{ ident1 | ident2 | ident3 }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.PipeExpr{
+					Left: &ast.PipeExpr{
+						Left:  &ast.IdentifierExpr{Value: "ident1"},
+						Right: &ast.IdentifierExpr{Value: "ident2"},
+					},
+					Right: &ast.IdentifierExpr{Value: "ident3"},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
