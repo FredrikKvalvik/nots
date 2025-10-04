@@ -1,6 +1,8 @@
 //go:generate go run generator.go
 package ast
 
+import "fmt"
+
 type Node interface {
 	// add a private method to make the interface unusable outside package
 	_node()
@@ -9,11 +11,14 @@ type Node interface {
 type Block interface {
 	Node
 	blockNode()
+
+	String() string
 }
 
 type Expr interface {
 	Node
 	expressionNode()
+	String() string
 }
 
 type Template struct {
@@ -41,6 +46,13 @@ func (m *BlockExpression) _node() {
 
 func (m *BlockExpression) blockNode() {}
 
+func (b *BlockExpression) String() string {
+	if b.Expression == nil {
+		return "(block-expr nil)"
+	}
+	return fmt.Sprintf("(block-expr %s)", b.Expression.String())
+}
+
 type BlockText struct {
 	Text string
 }
@@ -51,3 +63,7 @@ func (m *BlockText) _node() {
 }
 
 func (m *BlockText) blockNode() {}
+
+func (b *BlockText) String() string {
+	return fmt.Sprintf("(block-text \"%s\")", b.Text)
+}

@@ -59,8 +59,9 @@ func TestExpressionParsing(t *testing.T) {
 			result, err := p.Parse()
 			r.NoError(err)
 
-			// need to wrap the expression in a template for valid comparison
 			expect := &ast.Template{Blocks: []ast.Block{tt.expected}}
+			r.Equal(expect.Blocks[0].String(), result.Blocks[0].String())
+			// need to wrap the expression in a template for valid comparison
 			r.Equal(expect, result)
 		})
 	}

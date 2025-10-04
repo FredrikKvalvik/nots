@@ -96,10 +96,6 @@ func (p *Parser) advance() {
 	p.peekToken = p.l.NextToken()
 }
 
-func (p *Parser) atEnd() bool {
-	return p.curToken.Type == token.TokenTypeEOF
-}
-
 func (p *Parser) peekStickiness() int {
 	if s, ok := stickinessMap[p.peekToken.Type]; ok {
 		return s
@@ -131,6 +127,7 @@ func (p *Parser) expectPeek(typ token.TokenType) bool {
 	}
 	return false
 }
+
 func (p *Parser) expectCur(typ token.TokenType) bool {
 	if p.curTokenIs(typ) {
 		p.advance()
@@ -190,7 +187,7 @@ func parseExpression(p *Parser) stateFn {
 
 	// TODO: allow the for recovery by running to end of the expression and continue parsing to collect more errors
 
-	// // expect RightMeta, anyting else is an error
+	// // expect RightMeta, anything else is an error
 	if !p.expectCur(token.TokenTypeRMeta) {
 		p.expectError(token.TokenTypeRMeta)
 		return nil

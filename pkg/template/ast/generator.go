@@ -109,7 +109,6 @@ func generateNodes(interfaceName, interfaceMethod string, tmpl []template) strin
 
 	f.WriteString("// THIS FILE IS GENERATED. DO NOT EDIT\n\n")
 	f.WriteString(fmt.Sprintf("package %s\n\n", packageName))
-	// f.WriteString(fmt.Sprintf(`import "%s"`+"\n\n", tokenPkg))
 
 	for _, s := range tmpl {
 		name := s.name + interfaceName
