@@ -37,3 +37,10 @@ func (e *Env) RegisterFnValue(name string, fn func() (Object, error)) {
 		Fn:   fn,
 	}
 }
+func (e *Env) RegisterFunction(name string, fn func(objs ...Object) (Object, error), validArgs object.ValidArgs) {
+	e.Symbols[name] = &object.SymbolFunction{
+		ValidArgs: validArgs,
+		Name:      name,
+		Fn:        fn,
+	}
+}

@@ -65,7 +65,7 @@ func (o *ObjectSymbol) ToString() string {
 		return res.ToString()
 
 	case *SymbolFunction:
-		return fmt.Sprintf(`[function "%s" arity=%d]`, symbol.Name, symbol.Arity)
+		return fmt.Sprintf(`[function "%s" arity=%d]`, symbol.Name, symbol.ValidArgs)
 
 	default:
 		panic("unexpected symbol type: " + symbol.SymbolName())

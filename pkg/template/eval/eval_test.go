@@ -119,12 +119,9 @@ func testEnv() *Env {
 			},
 		},
 		"echo": &object.SymbolFunction{
-			Name:  "echo",
-			Arity: 1,
+			Name: "echo",
+
 			Fn: func(o ...object.Object) (object.Object, error) {
-				if len(o) != 1 {
-					return nil, fmt.Errorf("expect 1 args")
-				}
 				return &object.ObjectString{Val: o[0].ToString()}, nil
 			},
 		},

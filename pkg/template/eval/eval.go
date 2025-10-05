@@ -164,10 +164,6 @@ func (e *Evaluator) evalFunctionCall(n *ast.FunctionCallExpr) (Object, error) {
 	}
 
 	funcSymbol := callSymbolObj.Val.(*object.SymbolFunction)
-	if funcSymbol.Arity != len(n.Arguments) {
-		return nil, fmt.Errorf("expect %d args, got %d", funcSymbol.Arity, len(n.Arguments))
-	}
-
 	args := []Object{}
 	for _, arg := range n.Arguments {
 		res, err := e.eval(arg)
@@ -177,5 +173,5 @@ func (e *Evaluator) evalFunctionCall(n *ast.FunctionCallExpr) (Object, error) {
 		args = append(args, res)
 	}
 
-	return funcSymbol.Fn(args...)
+	return funcSymbol.Call(args...)
 }
