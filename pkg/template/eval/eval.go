@@ -115,6 +115,9 @@ func (e *Evaluator) eval(expr ast.Expr) (Object, error) {
 	case *ast.PipeExpr:
 		return e.evalPipe(ex)
 
+	case *ast.FunctionCallExpr:
+		return e.evalFunctionCall(ex)
+
 	default:
 		panic("unexpected node: " + ex.String())
 	}
@@ -141,4 +144,38 @@ func (e *Evaluator) evalPipe(n *ast.PipeExpr) (Object, error) {
 	}
 
 	return filter.Fn(lo)
+}
+
+func (e *Evaluator) evalFunctionCall(n *ast.FunctionCallExpr) (Object, error) {
+	callee, err := e.eval(n.Callee)
+	if err != nil {
+		return nil, err
+	}
+
+	// only type symbolFunction is callable
+	if callee.ObjectType() != object.ObjectTypeSymbol {
+		return nil, fmt.Errorf("can't call non-symbol: %s", callee.ObjectType())
+	}
+	callSymbolObj := callee.(*object.ObjectSymbol)
+
+	// only type symbolFunction is callable
+	if callSymbolObj.Val.Type() != object.SymbolTypeFunction {
+		return nil, fmt.Errorf("can't call non-function symbol: %s", callSymbolObj)
+	}
+
+	funcSymbol := callSymbolObj.Val.(*object.SymbolFunction)
+	if funcSymbol.Arity != len(n.Arguments) {
+		return nil, fmt.Errorf("expect %d args, got %d", funcSymbol.Arity, len(n.Arguments))
+	}
+
+	args := []Object{}
+	for _, arg := range n.Arguments {
+		res, err := e.eval(arg)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, res)
+	}
+
+	return funcSymbol.Fn(args...)
 }

@@ -8,6 +8,7 @@ const (
 	SymbolTypeValue
 	SymbolTypeFilter
 	SymbolTypeFnValue
+	SymbolTypeFunction
 )
 
 type Symbol interface {
@@ -61,7 +62,7 @@ func (s *SymbolFilter) SymbolName() string {
 // _symbol implements Symbol.
 func (s *SymbolFilter) _symbol() {}
 
-// === SYMBOL FILTER ===
+// === SYMBOL FnValue ===
 var _ Symbol = &SymbolFnValue{}
 
 // a fnValue evaluates Fn to return a value.
@@ -82,3 +83,29 @@ func (s *SymbolFnValue) SymbolName() string {
 
 // _symbol implements Symbol.
 func (s *SymbolFnValue) _symbol() {}
+
+// === SYMBOL function ===
+var _ Symbol = &SymbolFunction{}
+
+// a fnValue evaluates Fn to return a value.
+type SymbolFunction struct {
+	Name string
+
+	// required number of arguments
+	Arity int
+
+	Fn func(...Object) (Object, error)
+}
+
+// Type implements Symbol.
+func (s *SymbolFunction) Type() symbolType {
+	return SymbolTypeFunction
+}
+
+// Type implements Symbol.
+func (s *SymbolFunction) SymbolName() string {
+	return s.Name
+}
+
+// _symbol implements Symbol.
+func (s *SymbolFunction) _symbol() {}
