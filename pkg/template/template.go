@@ -10,10 +10,10 @@ import (
 	"github.com/fredrikkvalvik/nots/pkg/template/ast"
 	"github.com/fredrikkvalvik/nots/pkg/template/eval"
 	"github.com/fredrikkvalvik/nots/pkg/template/lexer"
+	"github.com/fredrikkvalvik/nots/pkg/template/object"
 	"github.com/fredrikkvalvik/nots/pkg/template/parser"
 )
 
-type Object = eval.Object
 type Template struct {
 	t    *ast.Template
 	eval *eval.Evaluator
@@ -30,11 +30,9 @@ func New(input string) (*Template, error) {
 	}
 
 	env := newEnv()
-	e := eval.New(t, env)
-
 	template := Template{
 		t:    t,
-		eval: e,
+		eval: eval.New(t, env),
 		env:  env,
 	}
 	return &template, nil
@@ -73,13 +71,13 @@ func (t *Template) RegisterNumberValue(name string, value float64) {
 // on the left side of the pipe, and modify the value, outputing it its right side.
 //
 // ex: `value | filter` -> result
-func (t *Template) RegisterFilter(name string, fn func(obj Object) (Object, error)) {
+func (t *Template) RegisterFilter(name string, fn func(obj object.Object) (object.Object, error)) {
 	t.env.RegisterFilter(name, fn)
 }
 
 // regisers a function that will be called when its name is evaluated.
 //
 // Useful for dynamic values like date or time. Can also do http requests and fetch external data
-func (t *Template) RegisterFnValue(name string, fn func() (Object, error)) {
+func (t *Template) RegisterFnValue(name string, fn func() (object.Object, error)) {
 	t.env.RegisterFnValue(name, fn)
 }

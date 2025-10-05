@@ -19,7 +19,7 @@ type Config struct {
 	DailyDirName      string `toml:"daily-dir-name"`
 
 	// could be nil, if so, default template defined in code
-	SelectedTemplate *string `toml:"default-template"`
+	SelectedTemplate string `toml:"default-template"`
 
 	// default open mode set how the default command resolves opening notes.
 	// currently supports:
@@ -84,7 +84,7 @@ func newDefaultConfig() Config {
 
 		DailyNameTemplate: "yyyy-mm-dd",
 		DailyDirName:      "", // default to root
-		SelectedTemplate:  nil,
+		SelectedTemplate:  "",
 		DefaultOpenMode:   "today",
 	}
 }
@@ -119,4 +119,7 @@ func must[T any](t T, err error) T {
 		panic(err)
 	}
 	return t
+}
+func ptr[T any](v T) *T {
+	return &v
 }

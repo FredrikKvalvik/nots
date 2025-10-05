@@ -44,6 +44,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfg.RootDir, "path", cfg.RootDir, "Override nots-dir path")
 	rootCmd.PersistentFlags().StringVar(&cfg.EditorCommand, "editor", cfg.EditorCommand, "override editor setting")
 	rootCmd.PersistentFlags().StringVar(&cfg.Pager, "viewer", cfg.Pager, "override viewer setting")
+	rootCmd.PersistentFlags().StringVar(&cfg.SelectedTemplate, "template", cfg.SelectedTemplate, "sets the template to use when creating new note")
 
 	currentState, err = state.Load(cfg)
 	cobra.CheckErr(err)

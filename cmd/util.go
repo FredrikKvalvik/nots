@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"syscall"
-	"text/template"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -16,14 +15,22 @@ import (
 
 func openNote(path string) {
 	if !checkFileExists(path) || checkFileEmpty(path) {
+		slog.Debug("creating new file", "path", path)
+
 		err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
 		cobra.CheckErr(err)
 
 		f := must(os.Create(path))
-		tpl := templateNote()
+		defer func() {
+			_ = f.Close()
+		}()
 
-		cobra.CheckErr(tpl.Execute(f, &TplArgs{Date: todayDate()}))
-		cobra.CheckErr(f.Close())
+		if cfg.SelectedTemplate != "" {
+			slog.Debug("found template", "template_name", cfg.SelectedTemplate)
+
+			err := loadTemplate(cfg.SelectedTemplate, f)
+			cobra.CheckErr(err)
+		}
 	}
 
 	spawnEditor(path)
@@ -89,21 +96,6 @@ func checkFileEmpty(filePath string) bool {
 		return true
 	}
 	return false
-}
-
-type TplArgs struct {
-	Date string
-}
-
-func templateNote() *template.Template {
-	tpl := template.Must(template.New("note").Parse(`# {{ .Date }}
-
-## Notater
-
-- ...
-`))
-
-	return tpl
 }
 
 func must[T any](t T, err error) T {
