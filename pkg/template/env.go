@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/fredrikkvalvik/nots/pkg/template/eval"
+	"github.com/fredrikkvalvik/nots/pkg/template/object"
 )
 
 // returns an env standard filters and values
@@ -21,23 +22,23 @@ func newEnv() *eval.Env {
 }
 
 // return a string with all letters uppercased
-func symbolUppercase(obj eval.Object) (eval.Object, error) {
-	return &eval.ObjectString{
+func symbolUppercase(obj object.Object) (object.Object, error) {
+	return &object.ObjectString{
 		Val: strings.ToUpper(obj.ToString()),
 	}, nil
 }
 
 // return a string with all letters lowercased
-func symbolLowercase(obj eval.Object) (eval.Object, error) {
-	return &eval.ObjectString{
+func symbolLowercase(obj object.Object) (object.Object, error) {
+	return &object.ObjectString{
 		Val: strings.ToLower(obj.ToString()),
 	}, nil
 }
 
 // return a string with "title case"
-func symbolToTitle(obj eval.Object) (eval.Object, error) {
+func symbolToTitle(obj object.Object) (object.Object, error) {
 	str := strings.ToTitle(strings.ToLower(obj.ToString()))
-	return &eval.ObjectString{
+	return &object.ObjectString{
 		Val: str,
 	}, nil
 }

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/fredrikkvalvik/nots/pkg/template/lexer"
+	"github.com/fredrikkvalvik/nots/pkg/template/object"
 	"github.com/fredrikkvalvik/nots/pkg/template/parser"
 	"github.com/stretchr/testify/require"
 )
@@ -52,15 +53,15 @@ func TestEval(t *testing.T) {
 			r.NoError(err)
 
 			ev := New(template, &Env{Symbols: map[string]Symbol{
-				"capitalize": &SymbolFilter{Fn: func(v Object) (Object, error) {
-					return &ObjectString{strings.ToUpper(v.ToString())}, nil
+				"capitalize": &object.SymbolFilter{Fn: func(v Object) (Object, error) {
+					return &object.ObjectString{strings.ToUpper(v.ToString())}, nil
 				}},
-				"lower": &SymbolFilter{Fn: func(v Object) (Object, error) {
-					return &ObjectString{strings.ToLower(v.ToString())}, nil
+				"lower": &object.SymbolFilter{Fn: func(v Object) (Object, error) {
+					return &object.ObjectString{strings.ToLower(v.ToString())}, nil
 				}},
-				"hello_world": &SymbolValue{
+				"hello_world": &object.SymbolValue{
 					Name: "hello_world",
-					Val:  &ObjectString{Val: "hello world"},
+					Val:  &object.ObjectString{Val: "hello world"},
 				},
 			}})
 

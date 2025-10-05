@@ -1,5 +1,7 @@
 package eval
 
+import "github.com/fredrikkvalvik/nots/pkg/template/object"
+
 type Env struct {
 	Symbols map[string]Symbol
 }
@@ -15,16 +17,16 @@ func (env *Env) GetSymbol(name string) Symbol {
 }
 
 func (e *Env) RegisterFilter(name string, fn func(o Object) (Object, error)) {
-	e.Symbols[name] = &SymbolFilter{
+	e.Symbols[name] = &object.SymbolFilter{
 		Name: name,
 		Fn:   fn,
 	}
 }
 
 func (e *Env) RegisterStringValue(name, value string) {
-	e.Symbols[name] = &SymbolValue{Name: name, Val: &ObjectString{Val: value}}
+	e.Symbols[name] = &object.SymbolValue{Name: name, Val: &object.ObjectString{Val: value}}
 }
 
 func (e *Env) RegisterNumberValue(name string, value float64) {
-	e.Symbols[name] = &SymbolValue{Name: name, Val: &ObjectNumber{Val: value}}
+	e.Symbols[name] = &object.SymbolValue{Name: name, Val: &object.ObjectNumber{Val: value}}
 }

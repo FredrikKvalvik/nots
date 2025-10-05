@@ -6,7 +6,11 @@ import (
 	"fmt"
 
 	"github.com/fredrikkvalvik/nots/pkg/template/ast"
+	"github.com/fredrikkvalvik/nots/pkg/template/object"
 )
+
+type Symbol = object.Symbol
+type Object = object.Object
 
 type Evaluator struct {
 	// symbol table
@@ -72,17 +76,17 @@ func (e *Evaluator) reset() {
 func (e *Evaluator) eval(expr ast.Expr) (Object, error) {
 	switch ex := expr.(type) {
 	case *ast.NumberLiteralExpr:
-		return &ObjectNumber{Val: ex.Value}, nil
+		return &object.ObjectNumber{Val: ex.Value}, nil
 
 	case *ast.StringLiteralExpr:
-		return &ObjectString{Val: ex.Value}, nil
+		return &object.ObjectString{Val: ex.Value}, nil
 
 	case *ast.IdentifierExpr:
 		symbol := e.env.GetSymbol(ex.Value)
 		if symbol == nil {
 			return nil, fmt.Errorf("failed to resolve symbol=%s", ex.Value)
 		}
-		return &ObjectSymbol{Val: symbol}, nil
+		return &object.ObjectSymbol{Val: symbol}, nil
 
 	case *ast.PipeExpr:
 		return e.evalPipe(ex)
@@ -107,7 +111,7 @@ func (e *Evaluator) evalPipe(n *ast.PipeExpr) (Object, error) {
 		return nil, fmt.Errorf("failed to resolve filter with name=%s", ident.Value)
 	}
 
-	filter, ok := symbol.(*SymbolFilter)
+	filter, ok := symbol.(*object.SymbolFilter)
 	if !ok {
 		return nil, fmt.Errorf("symbol=%s is not a valid filter", ident.Value)
 	}
