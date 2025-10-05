@@ -84,6 +84,7 @@ func TestEval(t *testing.T) {
 	}
 }
 
+// test symbols for tests
 func testEnv() *Env {
 	return &Env{Symbols: map[string]Symbol{
 		"capitalize": &object.SymbolFilter{
