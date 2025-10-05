@@ -65,6 +65,58 @@ func TestExpressionParsing(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:  "parse function call, no arguments",
+			input: "{{ func() }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.FunctionCallExpr{
+					Callee:    &ast.IdentifierExpr{Value: "func"},
+					Arguments: []ast.Expr{},
+				},
+			},
+		},
+		{
+			name:  "parse function call, one arguments",
+			input: "{{ func(1) }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.FunctionCallExpr{
+					Callee: &ast.IdentifierExpr{Value: "func"},
+					Arguments: []ast.Expr{
+						&ast.NumberLiteralExpr{Value: 1},
+					},
+				},
+			},
+		},
+		{
+			name:  "parse function call, two arguments",
+			input: "{{ func(1, 2) }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.FunctionCallExpr{
+					Callee: &ast.IdentifierExpr{Value: "func"},
+					Arguments: []ast.Expr{
+						&ast.NumberLiteralExpr{Value: 1},
+						&ast.NumberLiteralExpr{Value: 2},
+					},
+				},
+			},
+		},
+		{
+			name:  "parse function call, with function call argument",
+			input: "{{ func(1, fn(a)) }}",
+			expected: &ast.BlockExpression{
+				Expression: &ast.FunctionCallExpr{
+					Callee: &ast.IdentifierExpr{Value: "func"},
+					Arguments: []ast.Expr{
+						&ast.NumberLiteralExpr{Value: 1},
+						&ast.FunctionCallExpr{
+							Callee: &ast.IdentifierExpr{Value: "fn"},
+							Arguments: []ast.Expr{
+								&ast.IdentifierExpr{Value: "a"},
+							},
+						}},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

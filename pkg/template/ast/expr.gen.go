@@ -33,6 +33,13 @@ type PipeExpr struct {
 func (n *PipeExpr) expressionNode() {}
 func (n *PipeExpr) _node() {}
 
+type FunctionCallExpr struct {
+	Callee Expr
+	Arguments []Expr
+}
+func (n *FunctionCallExpr) expressionNode() {}
+func (n *FunctionCallExpr) _node() {}
+
 // this is gives us a compile time check to see of all the interafaces has ben properly implemented
 func _() {
 var _ Expr = &IdentifierExpr{}
@@ -40,4 +47,5 @@ var _ Expr = &NumberLiteralExpr{}
 var _ Expr = &StringLiteralExpr{}
 var _ Expr = &ParenExpr{}
 var _ Expr = &PipeExpr{}
+var _ Expr = &FunctionCallExpr{}
 }

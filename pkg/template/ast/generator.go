@@ -87,13 +87,13 @@ var exprs = []template{
 			{"Right", expr},
 		},
 	},
-	// {
-	// 	name: "FunctionLiteral",
-	// 	props: []keyVal{
-	// 		{"Arguments", "[]*Identifier" + expr},
-	// 		{"Body", "*Block" + stmt},
-	// 	},
-	// },
+	{
+		name: "FunctionCall",
+		props: []keyVal{
+			{"Callee", expr},
+			{"Arguments", "[]" + expr},
+		},
+	},
 }
 
 // This will generate a file for statements and expressions

@@ -27,7 +27,8 @@ const (
 )
 
 var stickinessMap = map[token.TokenType]int{
-	token.TokenTypePipe: PIPE,
+	token.TokenTypePipe:   PIPE,
+	token.TokenTypeLParen: CALL,
 }
 
 type stateFn func(p *Parser) stateFn
@@ -63,6 +64,7 @@ func New(l *lexer.Lexer) *Parser {
 
 	// INFIX PARSLETS
 	p.registerInfix(token.TokenTypePipe, p.parsePipeExpression)
+	p.registerInfix(token.TokenTypeLParen, p.parseFunctionExpression)
 
 	return p
 }

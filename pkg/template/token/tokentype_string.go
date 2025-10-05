@@ -20,11 +20,12 @@ func _() {
 	_ = x[TokenTypeLParen-9]
 	_ = x[TokenTypeRParen-10]
 	_ = x[TokenTypePipe-11]
+	_ = x[TokenTypeComma-12]
 }
 
-const _TokenType_name = "TokenTypeErrorTokenTypeDotTokenTypeEOFTokenTypeTextTokenTypeIdentifierTokenTypeNumberTokenTypeStringTokenTypeLMetaTokenTypeRMetaTokenTypeLParenTokenTypeRParenTokenTypePipe"
+const _TokenType_name = "TokenTypeErrorTokenTypeDotTokenTypeEOFTokenTypeTextTokenTypeIdentifierTokenTypeNumberTokenTypeStringTokenTypeLMetaTokenTypeRMetaTokenTypeLParenTokenTypeRParenTokenTypePipeTokenTypeComma"
 
-var _TokenType_index = [...]uint8{0, 14, 26, 38, 51, 70, 85, 100, 114, 128, 143, 158, 171}
+var _TokenType_index = [...]uint8{0, 14, 26, 38, 51, 70, 85, 100, 114, 128, 143, 158, 171, 185}
 
 func (i TokenType) String() string {
 	if i < 0 || i >= TokenType(len(_TokenType_index)-1) {
