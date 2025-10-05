@@ -7,6 +7,7 @@ import (
 	"github.com/fredrikkvalvik/nots/pkg/template/parser"
 )
 
+type Object = eval.Object
 type Template struct {
 	t    *ast.Template
 	eval *eval.Evaluator
@@ -34,4 +35,16 @@ func NewTemplate(input string) (*Template, error) {
 
 func (t *Template) Execute() (string, error) {
 	return t.eval.Execute()
+}
+
+func (t *Template) RegisterStringValue(name, value string) {
+	t.env.RegisterStringValue(name, value)
+}
+
+func (t *Template) RegisterNumberValue(name string, value float64) {
+	t.env.RegisterNumberValue(name, value)
+}
+
+func (t *Template) RegisterFilter(name string, fn func(obj Object) (Object, error)) {
+	t.env.RegisterFilter(name, fn)
 }
