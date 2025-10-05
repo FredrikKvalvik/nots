@@ -1,7 +1,6 @@
 package eval
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -38,8 +37,8 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name:     "expression with variable through filter",
-			input:    `{{ hello_world|capitalize }}`,
-			expected: "HELLO WORLD",
+			input:    `{{ hello_world|capitalize|lower }}`,
+			expected: "hello world",
 		},
 	}
 
@@ -52,20 +51,18 @@ func TestEval(t *testing.T) {
 			template, err := p.Parse()
 			r.NoError(err)
 
-			ev := New(template, &Env{symbols: map[string]Symbol{
+			ev := New(template, &Env{Symbols: map[string]Symbol{
 				"capitalize": &SymbolFilter{Fn: func(v Object) (Object, error) {
-					if v.ObjectType() != ObjectTypeString {
-						return nil, fmt.Errorf("expected string, got=%s", v.ObjectType())
-					}
-
-					return &ObjectString{Val: strings.ToUpper(v.ToString())}, nil
+					return &ObjectString{strings.ToUpper(v.ToString())}, nil
+				}},
+				"lower": &SymbolFilter{Fn: func(v Object) (Object, error) {
+					return &ObjectString{strings.ToLower(v.ToString())}, nil
 				}},
 				"hello_world": &SymbolValue{
 					Name: "hello_world",
 					Val:  &ObjectString{Val: "hello world"},
 				},
-			},
-			})
+			}})
 
 			result, err := ev.Execute()
 			r.NoError(err)

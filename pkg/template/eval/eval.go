@@ -2,18 +2,11 @@ package eval
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 
 	"github.com/fredrikkvalvik/nots/pkg/template/ast"
 )
-
-type Env struct {
-	symbols map[string]Symbol
-}
-
-func (env *Env) GetSymbol(name string) Symbol {
-	return env.symbols[name]
-}
 
 type Evaluator struct {
 	// symbol table
@@ -46,10 +39,15 @@ func (e *Evaluator) Execute() (string, error) {
 		case *ast.BlockExpression:
 			out, err := e.eval(b.Expression)
 			if err != nil {
-				return "", err
+				e.errors = append(e.errors, err)
+				continue
 			}
 			e.emit(out.ToString())
 		}
+	}
+
+	if len(e.errors) > 0 {
+		return "", errors.Join(e.errors...)
 	}
 
 	return e.out.String(), nil
@@ -63,11 +61,12 @@ func (e *Evaluator) emit(text string) {
 // resets the output. useful if a template is evaluated multiple times
 func (e *Evaluator) reset() {
 	e.out = bytes.Buffer{}
+	e.errors = nil
 }
 
-func (e *Evaluator) errorf(msg string, v ...any) {
-	e.errors = append(e.errors, fmt.Errorf(msg, v...))
-}
+// func (e *Evaluator) errorf(msg string, v ...any) {
+// 	e.errors = append(e.errors, fmt.Errorf(msg, v...))
+// }
 
 // evalauates an expression to a string
 func (e *Evaluator) eval(expr ast.Expr) (Object, error) {
