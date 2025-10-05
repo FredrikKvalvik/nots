@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/fredrikkvalvik/nots/pkg/template/ast"
 	"github.com/fredrikkvalvik/nots/pkg/template/object"
@@ -34,7 +35,36 @@ func New(template *ast.Template, env *Env) *Evaluator {
 func (e *Evaluator) Execute() (string, error) {
 	// reset out if template is run multiple times
 	e.reset()
+	e.runEval()
 
+	if len(e.errors) > 0 {
+		return "", errors.Join(e.errors...)
+	}
+
+	return e.out.String(), nil
+}
+
+// ExecuteWriter does a buffers the output and writes the content to
+// w. no writes are done when an error occurs
+func (e *Evaluator) ExecuteWriter(w io.Writer) error {
+	// reset out if template is run multiple times
+	e.reset()
+	e.runEval()
+
+	if len(e.errors) > 0 {
+		return errors.Join(e.errors...)
+	}
+
+	// write the buffer to w, only when no errors have occured
+	_, err := io.Copy(w, &e.out)
+	if err != nil {
+		return fmt.Errorf("an error occured when writing to w: %w", err)
+	}
+
+	return nil
+}
+
+func (e *Evaluator) runEval() {
 	for _, block := range e.template.Blocks {
 		switch b := block.(type) {
 		case *ast.BlockText:
@@ -49,17 +79,11 @@ func (e *Evaluator) Execute() (string, error) {
 			e.emit(out.ToString())
 		}
 	}
-
-	if len(e.errors) > 0 {
-		return "", errors.Join(e.errors...)
-	}
-
-	return e.out.String(), nil
 }
 
 // emit add the text to the output
 func (e *Evaluator) emit(text string) {
-	e.out.WriteString(text)
+	e.out.Write([]byte(text))
 }
 
 // resets the output. useful if a template is evaluated multiple times
