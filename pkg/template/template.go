@@ -48,3 +48,7 @@ func (t *Template) RegisterNumberValue(name string, value float64) {
 func (t *Template) RegisterFilter(name string, fn func(obj Object) (Object, error)) {
 	t.env.RegisterFilter(name, fn)
 }
+
+func (t *Template) RegisterFnValue(name string, fn func() (Object, error)) {
+	t.env.RegisterFnValue(name, fn)
+}

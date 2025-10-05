@@ -48,6 +48,7 @@ type ObjectSymbol struct {
 func (*ObjectSymbol) ObjectType() ObjectType {
 	return ObjectTypeSymbol
 }
+
 func (o *ObjectSymbol) ToString() string {
 	switch symbol := o.Val.(type) {
 	case *SymbolValue:
@@ -55,6 +56,13 @@ func (o *ObjectSymbol) ToString() string {
 
 	case *SymbolFilter:
 		return fmt.Sprintf(`[filter "%s"]`, symbol.Name)
+
+	case *SymbolFnValue:
+		res, err := symbol.Fn()
+		if err != nil {
+			return fmt.Sprintf("[fnValue %s failed: %s]", symbol.Name, err.Error())
+		}
+		return res.ToString()
 
 	default:
 		panic("unexpected symbol type: " + symbol.SymbolName())

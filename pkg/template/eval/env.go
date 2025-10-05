@@ -30,3 +30,10 @@ func (e *Env) RegisterStringValue(name, value string) {
 func (e *Env) RegisterNumberValue(name string, value float64) {
 	e.Symbols[name] = &object.SymbolValue{Name: name, Val: &object.ObjectNumber{Val: value}}
 }
+
+func (e *Env) RegisterFnValue(name string, fn func() (Object, error)) {
+	e.Symbols[name] = &object.SymbolFnValue{
+		Name: name,
+		Fn:   fn,
+	}
+}

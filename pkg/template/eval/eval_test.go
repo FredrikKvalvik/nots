@@ -41,6 +41,11 @@ func TestEval(t *testing.T) {
 			input:    `{{ hello_world|capitalize|lower }}`,
 			expected: "hello world",
 		},
+		{
+			name:     "fnValue evaluation",
+			input:    `{{ fn_value }}`,
+			expected: "from fn_value",
+		},
 	}
 
 	for _, tt := range tests {
@@ -53,15 +58,27 @@ func TestEval(t *testing.T) {
 			r.NoError(err)
 
 			ev := New(template, &Env{Symbols: map[string]Symbol{
-				"capitalize": &object.SymbolFilter{Fn: func(v Object) (Object, error) {
-					return &object.ObjectString{strings.ToUpper(v.ToString())}, nil
-				}},
-				"lower": &object.SymbolFilter{Fn: func(v Object) (Object, error) {
-					return &object.ObjectString{strings.ToLower(v.ToString())}, nil
-				}},
+				"capitalize": &object.SymbolFilter{
+					Name: "capitalize",
+					Fn: func(v Object) (Object, error) {
+						return &object.ObjectString{
+							Val: strings.ToUpper(v.ToString()),
+						}, nil
+					}},
+				"lower": &object.SymbolFilter{
+					Name: "lower",
+					Fn: func(v Object) (Object, error) {
+						return &object.ObjectString{Val: strings.ToLower(v.ToString())}, nil
+					}},
 				"hello_world": &object.SymbolValue{
 					Name: "hello_world",
 					Val:  &object.ObjectString{Val: "hello world"},
+				},
+				"fn_value": &object.SymbolFnValue{
+					Name: "fn_value",
+					Fn: func() (object.Object, error) {
+						return &object.ObjectString{Val: "from fn_value"}, nil
+					},
 				},
 			}})
 
