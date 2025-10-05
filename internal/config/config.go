@@ -53,8 +53,8 @@ func Load() (*Config, error) {
 	return &conf, nil
 }
 
-func TemplateName(name string) string {
-	return filepath.Join(resolveTemplatePath(), name)
+func TemplateDir() string {
+	return resolveTemplatePath()
 }
 
 // currenlty only checks ~/.config/nots/nots.toml
@@ -64,10 +64,13 @@ func resolveConfigPath() string {
 	return configPath
 }
 
+// creates the template dir if it does not aleady exist
 func resolveTemplatePath() string {
 	cfgPath := resolveConfigPath()
 	rootPath := filepath.Dir(cfgPath)
-	return filepath.Join(rootPath, "templates")
+	templatePath := filepath.Join(rootPath, "templates")
+	_ = os.MkdirAll(templatePath, 0646)
+	return templatePath
 }
 
 func newDefaultConfig() Config {

@@ -20,7 +20,7 @@ func OpenCmd() *cobra.Command {
 		Use:   "open",
 		Short: "open note with spesified name. (must end with .md)",
 
-		ValidArgsFunction: fileListCompleter,
+		ValidArgsFunction: fileCompleter(cfg.RootDir),
 		Args:              cobra.RangeArgs(0, 1),
 		Aliases:           []string{"o"},
 

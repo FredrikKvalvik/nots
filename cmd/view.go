@@ -22,7 +22,7 @@ func ViewCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "view [file]",
 		Example:           "echo 'filename.md' | nots view" + "\n" + "nots view filename.md",
-		ValidArgsFunction: fileListCompleter,
+		ValidArgsFunction: fileCompleter(cfg.RootDir),
 
 		Short:   "view a specified note",
 		Aliases: []string{"ls"},

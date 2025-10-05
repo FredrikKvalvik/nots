@@ -21,7 +21,7 @@ type Template struct {
 }
 
 func New(input string) (*Template, error) {
-	l := lexer.NewLex("", input)
+	l := lexer.NewLex("template", input)
 	p := parser.New(l)
 
 	t, err := p.Parse()
@@ -29,12 +29,13 @@ func New(input string) (*Template, error) {
 		return nil, err
 	}
 
-	env := newEnv
-	e := eval.New(t, env())
+	env := newEnv()
+	e := eval.New(t, env)
 
 	template := Template{
 		t:    t,
 		eval: e,
+		env:  env,
 	}
 	return &template, nil
 }

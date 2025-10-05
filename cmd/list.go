@@ -23,7 +23,7 @@ func ListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "list all notes",
 		// ValidArgsFunction: completers.DirListCompleter(cfg),
-		ValidArgsFunction: dirListCompleter,
+		ValidArgsFunction: dirCompleter(cfg.RootDir),
 		Aliases:           []string{"ls"},
 
 		Run: func(cmd *cobra.Command, args []string) {

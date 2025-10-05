@@ -22,14 +22,14 @@ var (
 	viewContent   = false
 	debug         = false
 
-	cfg          *config.Config
+	// looks wrong, but this enures that the config is loaded before init is called
+	cfg, err = config.Load()
+
 	currentState *state.State
 )
 
 func init() {
-	var err error
-	cfg, err = config.Load()
-
+	// check error straight away to make sure to config is valid
 	cobra.CheckErr(err)
 
 	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")

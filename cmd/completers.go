@@ -7,18 +7,50 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func fileListCompleter(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	list, err := lister.ListPathsRecursive(cfg.RootDir, false)
-	cobra.CheckErr(err)
+// recursivly scans for md files at root, and returns the list of found items
+func fileCompleter(root string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		list, err := lister.ListPathsRecursive(root, false)
+		cobra.CheckErr(err)
 
-	completions := []string{}
+		completions := []string{}
 
-	for _, path := range list {
-		p := path.String()
-		completions = append(completions, p)
+		for _, path := range list {
+			p := path.String()
+			completions = append(completions, p)
+		}
+
+		return completions, cobra.ShellCompDirectiveDefault
 	}
+}
 
-	return completions, cobra.ShellCompDirectiveDefault
+func dirCompleter(root string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		list, err := lister.ListPathsRecursive(root, false)
+		cobra.CheckErr(err)
+
+		toCompletePath := lister.NewPath(toComplete)
+
+		completions := []string{}
+
+		for _, path := range list {
+			p := path.String()
+			p = filepath.Dir(p)
+			if p == "." {
+				continue
+			}
+
+			// skip the current directory
+
+			completions = append(completions, p)
+
+			if path.ContainsSubset(toCompletePath) {
+				completions = append(completions, filepath.Dir(path.String()))
+			}
+		}
+
+		return completions, cobra.ShellCompDirectiveDefault
+	}
 }
 
 func dirListCompleter(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
