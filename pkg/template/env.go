@@ -12,31 +12,38 @@ import (
 func newEnv() *eval.Env {
 	e := eval.NewEnv()
 
-	e.RegisterStringValue("today", time.Now().Format(time.DateOnly))
+	e.RegisterFnValue("today_date_only", fnValueTodayDateOnly)
 
-	e.RegisterFilter("uppercase", symbolUppercase)
-	e.RegisterFilter("lowercase", symbolLowercase)
-	e.RegisterFilter("to_title", symbolToTitle)
+	e.RegisterFilter("uppercase", filterUppercase)
+	e.RegisterFilter("lowercase", filterLowercase)
+	e.RegisterFilter("to_title", filterToTitle)
 
 	return e
 }
 
+// evaluates time and formats it to dateOnly (yyyy-mm-dd)
+func fnValueTodayDateOnly() (eval.Object, error) {
+	return &object.ObjectString{
+		Val: time.Now().Format(time.DateOnly),
+	}, nil
+}
+
 // return a string with all letters uppercased
-func symbolUppercase(obj object.Object) (object.Object, error) {
+func filterUppercase(obj object.Object) (object.Object, error) {
 	return &object.ObjectString{
 		Val: strings.ToUpper(obj.ToString()),
 	}, nil
 }
 
 // return a string with all letters lowercased
-func symbolLowercase(obj object.Object) (object.Object, error) {
+func filterLowercase(obj object.Object) (object.Object, error) {
 	return &object.ObjectString{
 		Val: strings.ToLower(obj.ToString()),
 	}, nil
 }
 
 // return a string with "title case"
-func symbolToTitle(obj object.Object) (object.Object, error) {
+func filterToTitle(obj object.Object) (object.Object, error) {
 	str := strings.ToTitle(strings.ToLower(obj.ToString()))
 	return &object.ObjectString{
 		Val: str,
