@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -66,7 +67,10 @@ func todayFilePath() string {
 }
 
 func absolutePath(name string) string {
-	return filepath.Join(cfg.RootDir, name)
+	if !strings.HasPrefix(name, cfg.RootDir) {
+		return filepath.Join(cfg.RootDir, name)
+	}
+	return name
 }
 
 func todayDate() string {

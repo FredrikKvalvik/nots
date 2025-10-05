@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -28,27 +29,37 @@ func ViewCmd() *cobra.Command {
 		Aliases: []string{"ls"},
 
 		Run: func(cmd *cobra.Command, args []string) {
+			path := ""
 			if util.HasStdinData() {
-				fmt.Println("not implemented")
-				return
+				b, err := io.ReadAll(os.Stdin)
+				cobra.CheckErr(err)
+				path = strings.TrimSpace(string(b))
+				slog.Debug("view from stdin", "path", path)
+			} else if len(args) == 0 && currentState.PreviousNote != nil {
+				// i have been inconsistent in what way i resolve paths. sucks.
+				path = *currentState.PreviousNote
+				slog.Debug("view from previous note", "path", path)
 			} else if len(args) == 1 {
-				path := strings.TrimSpace(args[0])
+				path = strings.TrimSpace(args[0])
+				slog.Debug("view from args", "path", path)
+			} else {
+				fmt.Println("invalid use")
+				_ = cmd.Help()
+				return
+			}
+			path = absolutePath(path)
 
-				if !util.IsFilePath(path) {
-					cobra.CheckErr(fmt.Errorf("expects a valid file name, got=%s", path))
-				}
-
-				if toStdOut {
-					content := getFileContent(path)
-					fmt.Print(content)
-					return
-				} else {
-					viewNote(absolutePath(path))
-				}
+			if !util.IsFilePath(path) {
+				cobra.CheckErr(fmt.Errorf("expects a valid file name, got=%s", path))
 			}
 
-			fmt.Println("invalid use")
-			_ = cmd.Help()
+			if toStdOut {
+				content := getFileContent(path)
+				fmt.Print(content)
+				return
+			} else {
+				viewNote(path)
+			}
 		},
 	}
 	cmd.Flags().BoolVar(&toStdOut, "stdout", false, "prints the file to stdout instead of pager")
