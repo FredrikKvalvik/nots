@@ -48,7 +48,7 @@ func spawnEditor(path string) {
 	}
 }
 
-func getNoteContent(path string) string {
+func getFileContent(path string) string {
 	b, err := os.ReadFile(path)
 	cobra.CheckErr(err)
 	return string(b)

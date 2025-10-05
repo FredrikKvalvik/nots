@@ -114,7 +114,7 @@ func rootHandleCmds(_ *cobra.Command, _ []string) {
 		return
 
 	case printContent:
-		content := getNoteContent(absPath)
+		content := getFileContent(absPath)
 		fmt.Print(content)
 		return
 

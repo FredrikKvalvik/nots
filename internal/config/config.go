@@ -19,7 +19,6 @@ type Config struct {
 	DailyDirName      string `toml:"daily-dir-name"`
 
 	// could be nil, if so, default template defined in code
-	// NOTE: not implemented
 	SelectedTemplate *string `toml:"default-template"`
 
 	// default open mode set how the default command resolves opening notes.
@@ -54,11 +53,21 @@ func Load() (*Config, error) {
 	return &conf, nil
 }
 
+func TemplateName(name string) string {
+	return filepath.Join(resolveTemplatePath(), name)
+}
+
 // currenlty only checks ~/.config/nots/nots.toml
 func resolveConfigPath() string {
 	homedir := must(os.UserHomeDir())
 	configPath := fmt.Sprintf("%s/.config/nots/nots.toml", homedir)
 	return configPath
+}
+
+func resolveTemplatePath() string {
+	cfgPath := resolveConfigPath()
+	rootPath := filepath.Dir(cfgPath)
+	return filepath.Join(rootPath, "templates")
 }
 
 func newDefaultConfig() Config {

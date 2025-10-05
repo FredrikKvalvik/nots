@@ -39,7 +39,7 @@ func ViewCmd() *cobra.Command {
 				}
 
 				if toStdOut {
-					content := getNoteContent(path)
+					content := getFileContent(path)
 					fmt.Print(content)
 					return
 				} else {

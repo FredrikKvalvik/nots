@@ -1,7 +1,11 @@
+// template package is the main entry for working with templates.
+// it abstracts all the lexing/parsing/env setup, and exports a simple to use interface
+// for generating templates.
 package template
 
 import (
 	"io"
+	"os"
 
 	"github.com/fredrikkvalvik/nots/pkg/template/ast"
 	"github.com/fredrikkvalvik/nots/pkg/template/eval"
@@ -16,7 +20,7 @@ type Template struct {
 	env  *eval.Env
 }
 
-func NewTemplate(input string) (*Template, error) {
+func New(input string) (*Template, error) {
 	l := lexer.NewLex("", input)
 	p := parser.New(l)
 
@@ -33,6 +37,15 @@ func NewTemplate(input string) (*Template, error) {
 		eval: e,
 	}
 	return &template, nil
+}
+
+func FromPath(path string) (*Template, error) {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return New(string(b))
 }
 
 // return the string output of the evaluated template, or potential error
