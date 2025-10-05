@@ -35,6 +35,7 @@ const (
 	TokenTypeLParen // '('
 	TokenTypeRParen // ')'
 	TokenTypePipe   // '|'
+	TokenTypeComma  // ','
 )
 
 // item represents a token returned from the scanner.

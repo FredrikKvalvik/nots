@@ -173,6 +173,9 @@ func lexInsideAction(l *Lexer) stateFn {
 		case r == ')':
 			l.emit(token.TokenTypeRParen)
 
+		case r == ',':
+			l.emit(token.TokenTypeComma)
+
 		case r == '"':
 			l.backup()
 			return lexStringLiteral
