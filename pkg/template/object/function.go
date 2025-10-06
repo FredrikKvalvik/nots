@@ -9,7 +9,8 @@ var _ Symbol = &SymbolFunction{}
 
 // a fnValue evaluates Fn to return a value.
 type SymbolFunction struct {
-	Name string
+	Name        string
+	Description string
 
 	// required number of arguments
 	ValidArgs ValidArgs

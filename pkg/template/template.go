@@ -71,13 +71,13 @@ func (t *Template) RegisterNumberValue(name string, value float64) {
 // on the left side of the pipe, and modify the value, outputing it its right side.
 //
 // ex: `value | filter` -> result
-func (t *Template) RegisterFilter(name string, fn func(obj object.Object) (object.Object, error)) {
-	t.env.RegisterFilter(name, fn)
+func (t *Template) RegisterFilter(name, description string, fn func(obj object.Object) (object.Object, error)) {
+	t.env.RegisterFilter(name, description, fn)
 }
 
 // regisers a function that will be called when its name is evaluated.
 //
 // Useful for dynamic values like date or time. Can also do http requests and fetch external data
-func (t *Template) RegisterFnValue(name string, fn func() (object.Object, error)) {
-	t.env.RegisterFnValue(name, fn)
+func (t *Template) RegisterFnValue(name, description string, fn func() (object.Object, error)) {
+	t.env.RegisterFnValue(name, description, fn)
 }

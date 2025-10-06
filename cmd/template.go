@@ -82,7 +82,7 @@ type templateSymbolsFuncs struct {
 }
 
 func (ts *templateSymbolsFuncs) registerSymbols(t *template.Template) {
-	t.RegisterFnValue("joke", ts.joke)
+	t.RegisterFnValue("joke", "calls an API and returns a random joke", ts.joke)
 	t.RegisterStringValue("filename", ts.filename)
 }
 

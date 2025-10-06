@@ -53,8 +53,9 @@ var _ Symbol = &SymbolFilter{}
 // a filter takes a value (through a pipe), and does "something"
 // with it, and returns a new value
 type SymbolFilter struct {
-	Fn   func(v Object) (Object, error)
-	Name string
+	Fn          func(v Object) (Object, error)
+	Name        string
+	Description string
 }
 
 // Type implements Symbol.
@@ -79,8 +80,9 @@ var _ Symbol = &SymbolFnValue{}
 
 // a fnValue evaluates Fn to return a value.
 type SymbolFnValue struct {
-	Name string
-	Fn   func() (Object, error)
+	Name        string
+	Fn          func() (Object, error)
+	Description string
 }
 
 // Type implements Symbol.
