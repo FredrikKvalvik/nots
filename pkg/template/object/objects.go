@@ -54,9 +54,6 @@ func (o *ObjectSymbol) ToString() string {
 	case *SymbolValue:
 		return symbol.Val.ToString()
 
-	case *SymbolFilter:
-		return fmt.Sprintf(`[filter "%s"]`, symbol.Name)
-
 	case *SymbolFnValue:
 		res, err := symbol.Fn()
 		if err != nil {
@@ -64,10 +61,8 @@ func (o *ObjectSymbol) ToString() string {
 		}
 		return res.ToString()
 
-	case *SymbolFunction:
-		return fmt.Sprintf(`[function "%s" arity=%d]`, symbol.Name, symbol.ValidArgs)
-
 	default:
-		panic("unexpected symbol type: " + symbol.SymbolName())
+		// we only try to evaluate the "ToString" if possible, else we just print the symbol string
+		return symbol.String()
 	}
 }

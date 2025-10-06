@@ -1,6 +1,9 @@
 package template
 
 import (
+	"fmt"
+	"maps"
+	"slices"
 	"strings"
 	"time"
 
@@ -13,6 +16,19 @@ func newEnv() *eval.Env {
 	e := eval.NewEnv()
 
 	e.RegisterFnValue("today_date_only", fnValueTodayDateOnly)
+	e.RegisterFnValue("print_env", func() (eval.Object, error) {
+		keys := slices.Collect(maps.Keys(e.Symbols))
+		slices.Sort(keys)
+		var str strings.Builder
+		for _, key := range keys {
+			sym := e.Symbols[key]
+			fmt.Fprintf(&str, "%s\n", sym)
+		}
+
+		return &object.ObjectString{
+			Val: str.String(),
+		}, nil
+	})
 
 	e.RegisterFilter("uppercase", filterUppercase)
 	e.RegisterFilter("lowercase", filterLowercase)
@@ -22,7 +38,7 @@ func newEnv() *eval.Env {
 }
 
 // evaluates time and formats it to dateOnly (yyyy-mm-dd)
-func fnValueTodayDateOnly() (eval.Object, error) {
+func fnValueTodayDateOnly() (object.Object, error) {
 	return &object.ObjectString{
 		Val: time.Now().Format(time.DateOnly),
 	}, nil

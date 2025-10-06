@@ -1,4 +1,7 @@
+//go:generate go tool golang.org/x/tools/cmd/stringer -type symbolType
 package object
+
+import "fmt"
 
 type symbolType int
 
@@ -16,6 +19,7 @@ type Symbol interface {
 
 	Type() symbolType
 	SymbolName() string
+	String() string
 }
 
 // === SYMBOL VALUE ===
@@ -34,6 +38,10 @@ func (s *SymbolValue) Type() symbolType {
 // Type implements Symbol.
 func (s *SymbolValue) SymbolName() string {
 	return s.Name
+}
+
+func (s *SymbolValue) String() string {
+	return fmt.Sprintf("[%s %s]", s.Type(), s.Name)
 }
 
 // _symbol implements Symbol.
@@ -59,6 +67,10 @@ func (s *SymbolFilter) SymbolName() string {
 	return s.Name
 }
 
+func (s *SymbolFilter) String() string {
+	return fmt.Sprintf("[%s %s]", s.Type(), s.Name)
+}
+
 // _symbol implements Symbol.
 func (s *SymbolFilter) _symbol() {}
 
@@ -79,6 +91,10 @@ func (s *SymbolFnValue) Type() symbolType {
 // Type implements Symbol.
 func (s *SymbolFnValue) SymbolName() string {
 	return s.Name
+}
+
+func (s *SymbolFnValue) String() string {
+	return fmt.Sprintf("[%s %s]", s.Type(), s.Name)
 }
 
 // _symbol implements Symbol.

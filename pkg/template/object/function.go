@@ -28,9 +28,14 @@ func (s *SymbolFunction) SymbolName() string {
 	return s.Name
 }
 
+func (s *SymbolFunction) String() string {
+	return fmt.Sprintf("[%s %s]", s.Type(), s.Name)
+}
+
 // _symbol implements Symbol.
 func (s *SymbolFunction) _symbol() {}
 
+// does validation checks, then calls Fn
 func (s *SymbolFunction) Call(objs ...Object) (Object, error) {
 	if s.ValidArgs != nil {
 		if err := s.ValidArgs(objs); err != nil {
@@ -43,6 +48,7 @@ func (s *SymbolFunction) Call(objs ...Object) (Object, error) {
 
 type ValidArgs func(args []Object) error
 
+// expects n args
 func ExactArgs(n int) ValidArgs {
 	return func(args []Object) error {
 		length := len(args)
@@ -53,6 +59,7 @@ func ExactArgs(n int) ValidArgs {
 	}
 }
 
+// expects at least n args, but allows for more
 func MinArgs(n int) ValidArgs {
 	return func(args []Object) error {
 		length := len(args)
@@ -63,6 +70,7 @@ func MinArgs(n int) ValidArgs {
 	}
 }
 
+// expects a number of args between min and max
 func MinMaxArgs(min, max int) ValidArgs {
 	return func(args []Object) error {
 		length := len(args)
@@ -73,6 +81,7 @@ func MinMaxArgs(min, max int) ValidArgs {
 	}
 }
 
+// allows for any number and types of args
 func AnyArgs() ValidArgs {
 	return func([]Object) error {
 		return nil
