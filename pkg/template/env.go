@@ -11,6 +11,7 @@ import (
 
 	"github.com/fredrikkvalvik/nots/pkg/template/eval"
 	"github.com/fredrikkvalvik/nots/pkg/template/object"
+	"github.com/fredrikkvalvik/nots/pkg/timeformat"
 )
 
 // returns an env standard filters and values
@@ -18,7 +19,21 @@ func newEnv() *eval.Env {
 	e := eval.NewEnv()
 
 	e.RegisterFnValue("today_date_only", "returns todays date in yyyy-mm-dd format", fnValueTodayDateOnly)
-	e.RegisterFnValue("print_env", "print all available symbols", func() (eval.Object, error) {
+	e.RegisterFnValue("print_env", "print all available symbols", envPrinter(e))
+
+	e.RegisterFilter("uppercase", "return the input string in all uppercase", filterUppercase)
+	e.RegisterFilter("lowercase", "return the input string in all lowercase", filterLowercase)
+	e.RegisterFilter("to_title", "return the input string with each word capitalized", filterToTitle)
+	e.RegisterFilter("sh", "executes the input string as a shell command in the current environment", filterExec)
+
+	e.RegisterFunction("time_now", "prints the current datetime with the given format", functionTimeNow, object.ExpectTypesArgs(object.ObjectTypeString))
+
+	return e
+}
+
+// prints the available symbols for the given environment
+func envPrinter(e *eval.Env) func() (eval.Object, error) {
+	return func() (eval.Object, error) {
 		keys := slices.Collect(maps.Keys(e.Symbols))
 		slices.Sort(keys)
 		var str strings.Builder
@@ -30,14 +45,7 @@ func newEnv() *eval.Env {
 		return &object.ObjectString{
 			Val: str.String(),
 		}, nil
-	})
-
-	e.RegisterFilter("uppercase", "return the input string in all uppercase", filterUppercase)
-	e.RegisterFilter("lowercase", "return the input string in all lowercase", filterLowercase)
-	e.RegisterFilter("to_title", "return the input string with each word capitalized", filterToTitle)
-	e.RegisterFilter("sh", "executes the input string as a shell command in the current environment", filterExec)
-
-	return e
+	}
 }
 
 // evaluates time and formats it to dateOnly (yyyy-mm-dd)
@@ -90,4 +98,14 @@ func filterExec(obj object.Object) (object.Object, error) {
 
 	return &object.ObjectString{Val: string(res)}, nil
 
+}
+
+// is registered with args validation.
+func functionTimeNow(args ...object.Object) (object.Object, error) {
+	strObj := args[0].(*object.ObjectString)
+	format := strObj.Val
+
+	now := time.Now()
+	res := timeformat.Format(now, format)
+	return &object.ObjectString{Val: res}, nil
 }

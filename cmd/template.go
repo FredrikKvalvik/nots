@@ -89,7 +89,7 @@ func (ts *templateSymbolsFuncs) registerSymbols(t *template.Template) {
 // uses a jokes api to get a random joke
 func (ts *templateSymbolsFuncs) joke() (object.Object, error) {
 	baseUrl := "https://v2.jokeapi.dev"
-	url := fmt.Sprintf("%s/joke/Any?format=txt", baseUrl)
+	url := fmt.Sprintf("%s/joke/Programming?format=txt&blacklistFlags=nsfw,racist,sexist", baseUrl)
 
 	res, err := http.Get(url)
 	if err != nil {

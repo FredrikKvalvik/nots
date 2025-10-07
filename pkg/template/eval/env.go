@@ -18,8 +18,9 @@ func (env *Env) GetSymbol(name string) Symbol {
 
 func (e *Env) RegisterFilter(name, description string, fn func(o Object) (Object, error)) {
 	e.Symbols[name] = &object.SymbolFilter{
-		Name: name,
-		Fn:   fn,
+		Name:        name,
+		Description: description,
+		Fn:          fn,
 	}
 }
 
@@ -33,15 +34,17 @@ func (e *Env) RegisterNumberValue(name string, value float64) {
 
 func (e *Env) RegisterFnValue(name, description string, fn func() (Object, error)) {
 	e.Symbols[name] = &object.SymbolFnValue{
-		Name: name,
-		Fn:   fn,
+		Name:        name,
+		Description: description,
+		Fn:          fn,
 	}
 }
 
 func (e *Env) RegisterFunction(name, description string, fn func(objs ...Object) (Object, error), validArgs object.ValidArgs) {
 	e.Symbols[name] = &object.SymbolFunction{
-		ValidArgs: validArgs,
-		Name:      name,
-		Fn:        fn,
+		ValidArgs:   validArgs,
+		Name:        name,
+		Description: description,
+		Fn:          fn,
 	}
 }

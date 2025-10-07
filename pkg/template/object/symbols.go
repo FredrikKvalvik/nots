@@ -69,7 +69,7 @@ func (s *SymbolFilter) SymbolName() string {
 }
 
 func (s *SymbolFilter) String() string {
-	return fmt.Sprintf("[%s %s]", s.Type(), s.Name)
+	return fmt.Sprintf("[%s %s: %s]", s.Type(), s.Name, s.Description)
 }
 
 // _symbol implements Symbol.
@@ -96,7 +96,7 @@ func (s *SymbolFnValue) SymbolName() string {
 }
 
 func (s *SymbolFnValue) String() string {
-	return fmt.Sprintf("[%s %s]", s.Type(), s.Name)
+	return fmt.Sprintf("[%s %s: %s]", s.Type(), s.Name, s.Description)
 }
 
 // _symbol implements Symbol.

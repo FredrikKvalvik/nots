@@ -30,7 +30,7 @@ func (s *SymbolFunction) SymbolName() string {
 }
 
 func (s *SymbolFunction) String() string {
-	return fmt.Sprintf("[%s %s]", s.Type(), s.Name)
+	return fmt.Sprintf("[%s %s: %s]", s.Type(), s.Name, s.Description)
 }
 
 // _symbol implements Symbol.
