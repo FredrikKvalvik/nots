@@ -84,12 +84,12 @@ func rootHandleStdin(_ *cobra.Command, _ []string) {
 	fileName = strings.TrimSpace(fileName)
 
 	if util.IsFileName(fileName) {
-		openNote(absolutePath(fileName))
+		openNoteWithSelectedTemplate(absolutePath(fileName))
 		return
 	}
 
 	if util.IsFilePath(fileName) {
-		openNote(fileName)
+		openNoteWithSelectedTemplate(fileName)
 		return
 	}
 
@@ -128,7 +128,7 @@ func rootHandleCmds(_ *cobra.Command, _ []string) {
 		return
 
 	default:
-		openNote(absPath)
+		openNoteWithSelectedTemplate(absPath)
 	}
 }
 func setupLogger() {

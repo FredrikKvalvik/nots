@@ -39,7 +39,7 @@ func PreviousCmd() *cobra.Command {
 				viewNote(absoulutePath)
 
 			default:
-				openNote(absoulutePath)
+				openNoteWithSelectedTemplate(absoulutePath)
 			}
 
 		},

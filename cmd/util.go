@@ -14,27 +14,37 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func openNote(path string) {
-	if !checkFileExists(path) || checkFileEmpty(path) {
-		slog.Debug("creating new file", "path", path)
+// open note with selected template if it does not exist, else
+// we open the existing note
+func openNoteWithSelectedTemplate(absolutePath string) {
+	openNote(absolutePath, cfg.SelectedTemplate)
+}
 
-		err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
-		cobra.CheckErr(err)
+func openNote(absolutePath string, templateName string) {
+	if !checkFileExists(absolutePath) || checkFileEmpty(absolutePath) {
+		slog.Debug("creating new file", "path", absolutePath)
 
-		f := must(os.Create(path))
+		ensureFilepathExists(absolutePath)
+		f := must(os.Create(absolutePath))
 		defer func() {
 			_ = f.Close()
 		}()
 
 		if cfg.SelectedTemplate != "" {
-			slog.Debug("found template", "template_name", cfg.SelectedTemplate)
+			slog.Debug("found template", "template_name", templateName)
 
-			err := loadTemplate(cfg.SelectedTemplate, f)
+			err := loadTemplate(templateName, f)
 			cobra.CheckErr(err)
 		}
 	}
 
-	spawnEditor(path)
+	spawnEditor(absolutePath)
+}
+
+// ensures that the filepath exists by creating the parent directories
+func ensureFilepathExists(absolutePath string) {
+	err := os.MkdirAll(filepath.Dir(absolutePath), os.ModePerm)
+	cobra.CheckErr(err)
 }
 
 // helper for spawning editor process

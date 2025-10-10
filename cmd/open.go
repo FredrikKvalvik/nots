@@ -46,7 +46,7 @@ func OpenCmd() *cobra.Command {
 			}
 			fp := absolutePath(input)
 
-			openNote(fp)
+			openNoteWithSelectedTemplate(fp)
 
 		},
 	}

@@ -30,7 +30,7 @@ func TodayCmd() *cobra.Command {
 				viewNote(path)
 
 			default:
-				openNote(path)
+				openNoteWithSelectedTemplate(path)
 			}
 
 		},
