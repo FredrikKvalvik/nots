@@ -10,6 +10,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type NoteSeries struct {
+	// required. the name of the series.
+	SeriesName string `toml:"name"`
+
+	// optional. if set, controls what template to use for new notes in the series.
+	TemplateName string `toml:"template"`
+
+	// required. takes a single template expression that we evaluate with the template package,
+	// and check to see of a file with the evaluated name exists in the series directory
+	SeriesFilenameExpression string `toml:"filename-expression"`
+
+	// optional. where to put the note series. defaults to the series-name.
+	DirName string `toml:"directory"`
+}
+
 type Config struct {
 	EditorCommand string `toml:"editor"`
 	Pager         string `toml:"viewer"`
@@ -26,6 +41,8 @@ type Config struct {
 	//
 	// "today" | "previous"
 	DefaultOpenMode string `toml:"default-open-mode"`
+
+	NoteSeries []NoteSeries `toml:"note-series"`
 }
 
 func Load() (*Config, error) {
