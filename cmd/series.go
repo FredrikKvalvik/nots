@@ -20,7 +20,14 @@ func SeriesCmd() *cobra.Command {
 		Aliases: []string{"serie", "s"},
 		Short:   "open a note in a series",
 		Example: "nots series <series_name> [--option]",
-		// ValidArgsFunction: fileCompleter(config.TemplateDir()),
+		// returns a list of the defined series
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
+			validArgs := []string{}
+			for _, series := range cfg.NoteSeries {
+				validArgs = append(validArgs, series.SeriesName)
+			}
+			return validArgs, cobra.ShellCompDirectiveDefault
+		},
 
 		Args: cobra.ExactArgs(1),
 
