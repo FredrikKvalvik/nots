@@ -31,43 +31,44 @@ func SeriesCmd() *cobra.Command {
 
 		Args: cobra.ExactArgs(1),
 
-		Run: func(cmd *cobra.Command, args []string) {
-			name := args[0]
-
-			var series *config.NoteSeries
-			for _, s := range cfg.NoteSeries {
-				if s.SeriesName == name {
-					series = &s
-					break
-				}
-			}
-			if series == nil {
-				cobra.CheckErr(fmt.Errorf("there are no note-series name '%s'", name))
-				return
-			}
-
-			// having multiple expressions in the filenameExpression is an error. make sure the user doesn't escape
-			if strings.Contains(series.SeriesFilenameExpression, "{{") || strings.Contains(series.SeriesFilenameExpression, "}}") {
-				cobra.CheckErr(fmt.Errorf("invalid format on series filename expression. expression should not contain opening/closing expression signifiers"))
-			}
-
-			filename, err := template.Eval(fmt.Sprintf("{{ %s }}", series.SeriesFilenameExpression))
-			cobra.CheckErr(err)
-
-			if !strings.HasSuffix(filename, ".md") {
-				filename += ".md"
-			}
-
-			seriesDir := series.SeriesName
-			if series.DirName != "" {
-				seriesDir = series.DirName
-			}
-
-			absolutePath := filepath.Join(cfg.RootDir, seriesDir, filename)
-
-			openNote(absolutePath, series.TemplateName)
-		},
+		Run: openNoteSeriesCmd,
 	}
 
 	return cmd
+}
+
+func openNoteSeriesCmd(cmd *cobra.Command, args []string) {
+	name := args[0]
+
+	var series *config.NoteSeries
+	for _, s := range cfg.NoteSeries {
+		if s.SeriesName == name {
+			series = &s
+			break
+		}
+	}
+	if series == nil {
+		cobra.CheckErr(fmt.Errorf("there are no note-series name '%s'", name))
+		return
+	}
+
+	if strings.Contains(series.SeriesFilenameExpression, "{{") || strings.Contains(series.SeriesFilenameExpression, "}}") {
+		cobra.CheckErr(fmt.Errorf("invalid format on series filename expression. expression should not contain opening/closing expression signifiers"))
+	}
+
+	filename, err := template.Eval(fmt.Sprintf("{{ %s }}", series.SeriesFilenameExpression))
+	cobra.CheckErr(err)
+
+	if !strings.HasSuffix(filename, ".md") {
+		filename += ".md"
+	}
+
+	seriesDir := series.SeriesName
+	if series.DirName != "" {
+		seriesDir = series.DirName
+	}
+
+	absolutePath := filepath.Join(cfg.RootDir, seriesDir, filename)
+
+	openNote(absolutePath, series.TemplateName)
 }

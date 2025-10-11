@@ -12,9 +12,12 @@ type validateFunc func(cfg *Config) error
 var valdidationList = []validateFunc{
 	// validate defaultOpenMode
 	func(cfg *Config) error {
-		valid := []string{"today", "previous"}
+		valid := []string{
+			string(OpenPrevious),
+			string(OpenSeries),
+		}
 
-		if !slices.Contains(valid, cfg.DefaultOpenMode) {
+		if !slices.Contains(valid, string(cfg.DefaultOpenMode)) {
 			return fmt.Errorf("invalid value for default-open-mode: %s, expects [%s]", cfg.DefaultOpenMode, strings.Join(valid, "|"))
 		}
 		return nil

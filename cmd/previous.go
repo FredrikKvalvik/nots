@@ -13,9 +13,12 @@ func init() {
 	rootCmd.AddCommand(PreviousCmd())
 }
 
-func PreviousCmd() *cobra.Command {
-	var view bool
+type openPrevious struct {
+	view bool
+}
 
+func PreviousCmd() *cobra.Command {
+	prev := openPrevious{}
 	cmd := &cobra.Command{
 		Use:   "previous",
 		Short: "open the previous note.",
@@ -23,29 +26,31 @@ func PreviousCmd() *cobra.Command {
 		Args:    cobra.NoArgs,
 		Aliases: []string{"p", "prev"},
 
-		Run: func(cmd *cobra.Command, args []string) {
-			s, err := state.Load(cfg)
-			cobra.CheckErr(err)
-
-			if s.PreviousNote == nil {
-				fmt.Println("Error: no previous file is detected")
-				os.Exit(1)
-			}
-
-			absoulutePath := filepath.Clean(*s.PreviousNote)
-
-			switch true {
-			case view:
-				viewNote(absoulutePath)
-
-			default:
-				openNoteWithSelectedTemplate(absoulutePath)
-			}
-
-		},
+		Run: prev.openPreviousNoteCmd,
 	}
 
-	cmd.Flags().BoolVar(&view, "view", view, "view previous opened note")
+	cmd.Flags().BoolVar(&prev.view, "view", prev.view, "view previous opened note")
 
 	return cmd
+}
+
+func (op *openPrevious) openPreviousNoteCmd(cmd *cobra.Command, args []string) {
+	s, err := state.Load(cfg)
+	cobra.CheckErr(err)
+
+	if s.PreviousNote == nil {
+		fmt.Println("Error: no previous file is detected")
+		os.Exit(1)
+	}
+
+	absoulutePath := filepath.Clean(*s.PreviousNote)
+
+	switch true {
+	case op.view:
+		viewNote(absoulutePath)
+
+	default:
+		openNoteWithSelectedTemplate(absoulutePath)
+	}
+
 }

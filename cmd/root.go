@@ -16,11 +16,8 @@ import (
 )
 
 var (
-	printFilePath = false
-	printFileDir  = false
-	printContent  = false
-	viewContent   = false
-	debug         = false
+	viewContent = false
+	debug       = false
 
 	// looks wrong, but this enures that the config is loaded before init is called
 	cfg, err = config.Load()
@@ -31,12 +28,8 @@ var (
 func init() {
 	// check error straight away to make sure to config is valid
 	cobra.CheckErr(err)
-
-	rootCmd.Flags().BoolVarP(&printFileDir, "dir", "d", false, "print the notes directory path")
-	rootCmd.Flags().BoolVarP(&printFilePath, "file", "f", false, "print the notes file path")
-	rootCmd.Flags().BoolVarP(&printContent, "print", "p", false, "print the content of the file")
 	rootCmd.Flags().BoolVar(&viewContent, "view", false, "view the contents of todays note")
-	rootCmd.Flags().StringVar(&cfg.DefaultOpenMode, "open-mode", cfg.DefaultOpenMode, "sets the open mode for base nots command")
+	rootCmd.Flags().Var(&cfg.DefaultOpenMode, "open-mode", "sets the open mode for base nots command [series:series-name | previous]")
 
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "prints debug messages")
 
@@ -96,40 +89,22 @@ func rootHandleStdin(_ *cobra.Command, _ []string) {
 	cobra.CheckErr(fmt.Errorf("could not resolve input: %s", fileName))
 }
 
-func rootHandleCmds(_ *cobra.Command, _ []string) {
-	var absPath string
-	switch cfg.DefaultOpenMode {
-	case "today":
-		absPath = todayFilePath()
-	case "previous":
-		if currentState.PreviousNote == nil {
-			absPath = todayFilePath()
-		} else {
-			absPath = *currentState.PreviousNote
+func rootHandleCmds(cmd *cobra.Command, args []string) {
+
+	if cfg.DefaultOpenMode == config.OpenSeries {
+		openNoteSeriesCmd(cmd, args)
+		return
+	}
+
+	if cfg.DefaultOpenMode == config.OpenPrevious {
+		op := openPrevious{
+			view: viewContent,
 		}
+		op.openPreviousNoteCmd(cmd, args)
+		return
 	}
-	switch true {
 
-	case viewContent:
-		viewNote(absPath)
-		return
-
-	case printContent:
-		content := getFileContent(absPath)
-		fmt.Print(content)
-		return
-
-	case printFilePath:
-		_, _ = fmt.Fprintln(os.Stdout, absPath)
-		return
-
-	case printFileDir:
-		_, _ = fmt.Fprintln(os.Stdout, cfg.RootDir)
-		return
-
-	default:
-		openNoteWithSelectedTemplate(absPath)
-	}
+	cobra.CheckErr(fmt.Errorf("unexpected openmode: %s", cfg.DefaultOpenMode))
 }
 func setupLogger() {
 

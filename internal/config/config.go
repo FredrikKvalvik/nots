@@ -8,6 +8,32 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+)
+
+var _ pflag.Value = (*NotsOpenMode)(nil)
+
+type NotsOpenMode string
+
+// Set implements pflag.Value.
+func (n *NotsOpenMode) Set(s string) error {
+	*n = NotsOpenMode(s)
+	return nil
+}
+
+// String implements pflag.Value.
+func (n NotsOpenMode) String() string {
+	return string(n)
+}
+
+// Type implements pflag.Value.
+func (n NotsOpenMode) Type() string {
+	return "NotsOpenMode"
+}
+
+const (
+	OpenPrevious NotsOpenMode = "previous"
+	OpenSeries   NotsOpenMode = "series"
 )
 
 type NoteSeries struct {
@@ -30,17 +56,18 @@ type Config struct {
 	Pager         string `toml:"viewer"`
 	RootDir       string `toml:"notes-dir"`
 
-	DailyNameTemplate string `toml:"daily-name-template"`
-	DailyDirName      string `toml:"daily-dir-name"`
-
 	// could be nil, if so, default template defined in code
 	SelectedTemplate string `toml:"default-template"`
 
 	// default open mode set how the default command resolves opening notes.
 	// currently supports:
 	//
-	// "today" | "previous"
-	DefaultOpenMode string `toml:"default-open-mode"`
+	// "series" | "previous"
+	// defaults to previous
+	DefaultOpenMode NotsOpenMode `toml:"default-open-mode"`
+
+	// must be set when using default-open-mode set to "series" to control what note-series to use
+	OpenModeSeries string `toml:"open-mode-series"`
 
 	NoteSeries []NoteSeries `toml:"note-series"`
 }
@@ -99,10 +126,10 @@ func newDefaultConfig() Config {
 		Pager:         "$PAGER",
 		RootDir:       dirpath,
 
-		DailyNameTemplate: "yyyy-mm-dd",
-		DailyDirName:      "", // default to root
-		SelectedTemplate:  "",
-		DefaultOpenMode:   "today",
+		SelectedTemplate: "",
+		DefaultOpenMode:  "previous",
+		OpenModeSeries:   "",
+		NoteSeries:       []NoteSeries{},
 	}
 }
 

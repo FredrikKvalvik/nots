@@ -1,42 +1,36 @@
 package cmd
 
-import (
-	"log/slog"
+// func init() {
+// 	rootCmd.AddCommand(TodayCmd())
+// }
 
-	"github.com/spf13/cobra"
-)
+// func TodayCmd() *cobra.Command {
+// 	var view bool
 
-func init() {
-	rootCmd.AddCommand(TodayCmd())
-}
+// 	cmd := &cobra.Command{
+// 		Use:   "today",
+// 		Short: "open the todays note.",
 
-func TodayCmd() *cobra.Command {
-	var view bool
+// 		Args: cobra.NoArgs,
 
-	cmd := &cobra.Command{
-		Use:   "today",
-		Short: "open the todays note.",
+// 		Run: func(cmd *cobra.Command, args []string) {
+// 			slog.Debug("running today command")
 
-		Args: cobra.NoArgs,
+// 			path := todayFilePath()
 
-		Run: func(cmd *cobra.Command, args []string) {
-			slog.Debug("running today command")
+// 			slog.Debug("today file path", "path", path)
+// 			switch true {
+// 			case view:
+// 				viewNote(path)
 
-			path := todayFilePath()
+// 			default:
+// 				openNoteWithSelectedTemplate(path)
+// 			}
 
-			slog.Debug("today file path", "path", path)
-			switch true {
-			case view:
-				viewNote(path)
+// 		},
+// 	}
 
-			default:
-				openNoteWithSelectedTemplate(path)
-			}
+// 	cmd.Flags().BoolVar(&view, "view", view, "view previous opened note")
 
-		},
-	}
-
-	cmd.Flags().BoolVar(&view, "view", view, "view previous opened note")
-
-	return cmd
-}
+// 	return cmd
+// }
