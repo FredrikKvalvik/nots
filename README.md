@@ -84,6 +84,8 @@ directory = ""
 
 ## Templates
 
+_templates are still WIP. there are more features i would like to add._
+
 Nots has its own template parsing and evaluation. The templates allow for simple expression evaluation.
 
 To define a template, go to `~/.config/nots/templates` and create a .md file.
