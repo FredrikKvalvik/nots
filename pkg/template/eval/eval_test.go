@@ -23,6 +23,11 @@ func TestEval(t *testing.T) {
 			expected: "hello world",
 		},
 		{
+			name:     "simple expression with concatination",
+			input:    `{{ "hello " . "world" }}`,
+			expected: "hello world",
+		},
+		{
 			name:     "expression with text",
 			input:    `# hello {{ "world"|capitalize }}!`,
 			expected: "# hello WORLD!",

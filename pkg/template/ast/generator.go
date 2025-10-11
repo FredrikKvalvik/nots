@@ -88,6 +88,14 @@ var exprs = []template{
 		},
 	},
 	{
+		name: "Binary",
+		props: []keyVal{
+			{"Op", "token.TokenType"},
+			{"Left", expr},
+			{"Right", expr},
+		},
+	},
+	{
 		name: "FunctionCall",
 		props: []keyVal{
 			{"Callee", expr},
@@ -109,6 +117,8 @@ func generateNodes(interfaceName, interfaceMethod string, tmpl []template) strin
 
 	f.WriteString("// THIS FILE IS GENERATED. DO NOT EDIT\n\n")
 	f.WriteString(fmt.Sprintf("package %s\n\n", packageName))
+	f.WriteString(fmt.Sprintf(`import "%s"`, tokenPkg))
+	f.WriteString("\n\n")
 
 	for _, s := range tmpl {
 		name := s.name + interfaceName

@@ -7,4 +7,8 @@ install:
 test:
 	go test ./...
 
+.PHONY generate:
+generate:
+	go generate ./...
+
 

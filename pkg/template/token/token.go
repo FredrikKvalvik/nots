@@ -21,7 +21,6 @@ func (i Token) String() string {
 const (
 	TokenTypeError TokenType = iota // error occurred;
 	// value is text of error
-	TokenTypeDot // the cursor, spelled '.'
 	TokenTypeEOF
 	TokenTypeText // any type of text outside an expression
 
@@ -36,6 +35,7 @@ const (
 	TokenTypeRParen // ')'
 	TokenTypePipe   // '|'
 	TokenTypeComma  // ','
+	TokenTypeDot    // '.'
 )
 
 // item represents a token returned from the scanner.

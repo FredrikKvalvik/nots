@@ -2,6 +2,8 @@
 
 package ast
 
+import "github.com/fredrikkvalvik/nots/pkg/template/token"
+
 type IdentifierExpr struct {
 	Value string
 }
@@ -33,6 +35,14 @@ type PipeExpr struct {
 func (n *PipeExpr) expressionNode() {}
 func (n *PipeExpr) _node() {}
 
+type BinaryExpr struct {
+	Op token.TokenType
+	Left Expr
+	Right Expr
+}
+func (n *BinaryExpr) expressionNode() {}
+func (n *BinaryExpr) _node() {}
+
 type FunctionCallExpr struct {
 	Callee Expr
 	Arguments []Expr
@@ -47,5 +57,6 @@ var _ Expr = &NumberLiteralExpr{}
 var _ Expr = &StringLiteralExpr{}
 var _ Expr = &ParenExpr{}
 var _ Expr = &PipeExpr{}
+var _ Expr = &BinaryExpr{}
 var _ Expr = &FunctionCallExpr{}
 }

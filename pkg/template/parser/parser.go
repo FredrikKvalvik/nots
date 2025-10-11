@@ -15,7 +15,9 @@ type infixFn = func(left ast.Expr) ast.Expr
 const (
 	_ int = iota
 	LOWEST
-	PIPE // |
+	PIPE   // |
+	CONCAT // .
+
 	// OR          // or
 	// AND         // and
 	// EQUALS      // ==
@@ -28,6 +30,7 @@ const (
 
 var stickinessMap = map[token.TokenType]int{
 	token.TokenTypePipe:   PIPE,
+	token.TokenTypeDot:    CONCAT,
 	token.TokenTypeLParen: CALL,
 }
 
@@ -64,6 +67,7 @@ func New(l *lexer.Lexer) *Parser {
 
 	// INFIX PARSLETS
 	p.registerInfix(token.TokenTypePipe, p.parsePipeExpression)
+	p.registerInfix(token.TokenTypeDot, p.parseBinaryExpression)
 	p.registerInfix(token.TokenTypeLParen, p.parseFunctionExpression)
 
 	return p

@@ -8,6 +8,7 @@ import (
 
 	"github.com/fredrikkvalvik/nots/pkg/template/ast"
 	"github.com/fredrikkvalvik/nots/pkg/template/object"
+	"github.com/fredrikkvalvik/nots/pkg/template/token"
 )
 
 type Symbol = object.Symbol
@@ -118,6 +119,9 @@ func (e *Evaluator) eval(expr ast.Expr) (Object, error) {
 	case *ast.FunctionCallExpr:
 		return e.evalFunctionCall(ex)
 
+	case *ast.BinaryExpr:
+		return e.evalBinaryExpr(ex)
+
 	default:
 		panic("unexpected node: " + ex.String())
 	}
@@ -144,6 +148,26 @@ func (e *Evaluator) evalPipe(n *ast.PipeExpr) (Object, error) {
 	}
 
 	return filter.Fn(lo)
+}
+
+func (e *Evaluator) evalBinaryExpr(n *ast.BinaryExpr) (Object, error) {
+	lo, err := e.eval(n.Left)
+	if err != nil {
+		return nil, err
+	}
+	ro, err := e.eval(n.Right)
+	if err != nil {
+		return nil, err
+	}
+
+	switch n.Op {
+	case token.TokenTypeDot:
+		return &object.ObjectString{
+			Val: lo.ToString() + ro.ToString(),
+		}, nil
+	}
+
+	return nil, fmt.Errorf("unexpected operator: %s", n.Op)
 }
 
 func (e *Evaluator) evalFunctionCall(n *ast.FunctionCallExpr) (Object, error) {

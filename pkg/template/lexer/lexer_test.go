@@ -13,7 +13,7 @@ func TestLex(t *testing.T) {
 		expect []token.Token
 	}{
 		{
-			`hello world {{ ident "string" 123 1.1 , }}`,
+			`hello world {{ ident "string" 123 1.1 , . }}`,
 			[]token.Token{
 				{Type: token.TokenTypeText, Val: "hello world "},
 				{Type: token.TokenTypeLMeta, Val: "{{"},
@@ -22,6 +22,7 @@ func TestLex(t *testing.T) {
 				{Type: token.TokenTypeNumber, Val: `123`},
 				{Type: token.TokenTypeNumber, Val: `1.1`},
 				{Type: token.TokenTypeComma, Val: `,`},
+				{Type: token.TokenTypeDot, Val: `.`},
 				{Type: token.TokenTypeRMeta, Val: "}}"},
 				{Type: token.TokenTypeEOF},
 			},

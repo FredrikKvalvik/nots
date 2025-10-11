@@ -9,23 +9,23 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[TokenTypeError-0]
-	_ = x[TokenTypeDot-1]
-	_ = x[TokenTypeEOF-2]
-	_ = x[TokenTypeText-3]
-	_ = x[TokenTypeIdentifier-4]
-	_ = x[TokenTypeNumber-5]
-	_ = x[TokenTypeString-6]
-	_ = x[TokenTypeLMeta-7]
-	_ = x[TokenTypeRMeta-8]
-	_ = x[TokenTypeLParen-9]
-	_ = x[TokenTypeRParen-10]
-	_ = x[TokenTypePipe-11]
-	_ = x[TokenTypeComma-12]
+	_ = x[TokenTypeEOF-1]
+	_ = x[TokenTypeText-2]
+	_ = x[TokenTypeIdentifier-3]
+	_ = x[TokenTypeNumber-4]
+	_ = x[TokenTypeString-5]
+	_ = x[TokenTypeLMeta-6]
+	_ = x[TokenTypeRMeta-7]
+	_ = x[TokenTypeLParen-8]
+	_ = x[TokenTypeRParen-9]
+	_ = x[TokenTypePipe-10]
+	_ = x[TokenTypeComma-11]
+	_ = x[TokenTypeDot-12]
 }
 
-const _TokenType_name = "TokenTypeErrorTokenTypeDotTokenTypeEOFTokenTypeTextTokenTypeIdentifierTokenTypeNumberTokenTypeStringTokenTypeLMetaTokenTypeRMetaTokenTypeLParenTokenTypeRParenTokenTypePipeTokenTypeComma"
+const _TokenType_name = "TokenTypeErrorTokenTypeEOFTokenTypeTextTokenTypeIdentifierTokenTypeNumberTokenTypeStringTokenTypeLMetaTokenTypeRMetaTokenTypeLParenTokenTypeRParenTokenTypePipeTokenTypeCommaTokenTypeDot"
 
-var _TokenType_index = [...]uint8{0, 14, 26, 38, 51, 70, 85, 100, 114, 128, 143, 158, 171, 185}
+var _TokenType_index = [...]uint8{0, 14, 26, 39, 58, 73, 88, 102, 116, 131, 146, 159, 173, 185}
 
 func (i TokenType) String() string {
 	if i < 0 || i >= TokenType(len(_TokenType_index)-1) {

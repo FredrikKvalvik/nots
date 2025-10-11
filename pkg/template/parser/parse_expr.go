@@ -124,6 +124,22 @@ func (p *Parser) parsePipeExpression(left ast.Expr) ast.Expr {
 	return pipe
 }
 
+func (p *Parser) parseBinaryExpression(left ast.Expr) ast.Expr {
+	// {{ left . right }}
+	//         ^
+	binOp := &ast.BinaryExpr{
+		Left: left,
+		Op:   p.curToken.Type,
+	}
+	stickiness := p.curStickiness()
+	p.advance()
+
+	// {{ left . right }}
+	//           ^
+	binOp.Right = p.parseExpression(stickiness)
+	return binOp
+}
+
 func (p *Parser) parseFunctionExpression(left ast.Expr) ast.Expr {
 	fncall := &ast.FunctionCallExpr{Callee: left}
 
