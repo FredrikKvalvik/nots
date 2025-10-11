@@ -20,6 +20,17 @@ type Template struct {
 	env  *eval.Env
 }
 
+// helper for evaluating a template.
+func Eval(input string) (string, error) {
+	t, err := New(input)
+	if err != nil {
+		return "", err
+	}
+
+	return t.Execute()
+}
+
+// return a new Template.
 func New(input string) (*Template, error) {
 	l := lexer.NewLex("template", input)
 	p := parser.New(l)

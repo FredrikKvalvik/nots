@@ -33,15 +33,6 @@ func SeriesCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
-			// TODO:
-			// - check to see of the series exist. exit if not
-			// - create directory if missing
-			// - evaluate filename_expression to look for a match
-			//   - if there is a match, we are done. open note
-			//   - contine if not
-			// - resolve the template, exit if missing
-			// - evaluate template
-			// - create file and open new note
 
 			var series *config.NoteSeries
 			for _, s := range cfg.NoteSeries {
@@ -55,11 +46,14 @@ func SeriesCmd() *cobra.Command {
 				return
 			}
 
-			nameTemplate, err := template.New(fmt.Sprintf("{{ %s }}", series.SeriesFilenameExpression))
+			// having multiple expressions in the filenameExpression is an error. make sure the user doesn't escape
+			if strings.Contains(series.SeriesFilenameExpression, "{{") || strings.Contains(series.SeriesFilenameExpression, "}}") {
+				cobra.CheckErr(fmt.Errorf("invalid format on series filename expression. expression should not contain opening/closing expression signifiers"))
+			}
+
+			filename, err := template.Eval(fmt.Sprintf("{{ %s }}", series.SeriesFilenameExpression))
 			cobra.CheckErr(err)
 
-			filename, err := nameTemplate.Execute()
-			cobra.CheckErr(err)
 			if !strings.HasSuffix(filename, ".md") {
 				filename += ".md"
 			}
