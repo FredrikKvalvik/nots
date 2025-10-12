@@ -93,15 +93,17 @@ To define a template, go to `~/.config/nots/templates` and create a .md file.
 template:
 
 ```
-{{ "string"|upper_case }}
-{{ filename }}
-{{ time_now("YYYY-MM-DD") }}
+{{ "string"|upper_case }}    // uppercase strings with a filter
+{{ "hello " . "world" }}     // concat two strings with the concat operator
+{{ filename }}               // evaluate the filename var from the calling environment
+{{ time_now("YYYY-MM-DD") }} // call the time_now function with the time formatted by the format string
 ```
 
 output:
 
 ```
 STRING
+hello world
 my-file.md
 2025-10-01
 ```
