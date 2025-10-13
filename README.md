@@ -43,7 +43,7 @@ use the `-h` flag for any of the commands to see what you can do.
 Nots is configurable to allow you to control most things. You can choose
 which editor to use, where to store your notes.
 
-Create you config at `~/.config/nots.nots.toml`.
+Create you config at `~/.config/nots/nots.toml`.
 
 ```toml
 # set the root directory for all notes. defaults to ~/nots

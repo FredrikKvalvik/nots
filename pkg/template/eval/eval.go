@@ -45,8 +45,10 @@ func (e *Evaluator) Execute() (string, error) {
 	return e.out.String(), nil
 }
 
-// ExecuteWriter does a buffers the output and writes the content to
-// w. no writes are done when an error occurs
+// ExecuteWriter writes its result to w. There is a possiblility for
+// an error to still result in a write to w, but only the copy-action itself.
+//
+// All other errors will be related evaluating the template.
 func (e *Evaluator) ExecuteWriter(w io.Writer) error {
 	// reset out if template is run multiple times
 	e.reset()
