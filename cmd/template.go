@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/fredrikkvalvik/nots/internal/config"
@@ -15,6 +16,8 @@ import (
 )
 
 func TemplateCmd() *cobra.Command {
+	var variables []string
+
 	cmd := &cobra.Command{
 		Use:               "template",
 		Short:             "evaluate templates to be used as text or fragments for notes",
@@ -25,17 +28,25 @@ func TemplateCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
-			err := loadTemplate(name, os.Stdout)
+
+			slog.Debug("variables", "args", variables)
+
+			err := loadTemplate(name, os.Stdout, variables...)
 			cobra.CheckErr(err)
 		},
 	}
+
+	cmd.Flags().StringSliceVar(&variables, "variable", nil, `add variables as key-value pairs, separated by a ':'. example: --variable="myvar:'hello world'". NOTE: strings must be quoted with single-qoutes.`)
 
 	return cmd
 }
 
 // load the template into w. the write might be successful
 // and still return and error. all other errors are os errors and can be checked for
-func loadTemplate(name string, w io.Writer) error {
+//
+// variables are unparsed key-value pairs as strings formatted like this: "key:value".
+// strings are single-quoted, the rest of the values are unqouted.
+func loadTemplate(name string, w io.Writer, variables ...string) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -56,6 +67,13 @@ func loadTemplate(name string, w io.Writer) error {
 	}
 
 	ts.registerSymbols(template)
+
+	// register args from commandline
+	for _, kv := range variables {
+		name, obj, err := parseVariable(kv)
+		cobra.CheckErr(err)
+		template.RegisterFnValue(name, "from command", func() (object.Object, error) { return obj, nil })
+	}
 
 	// print the output the os.Stdout, or report an error
 	err = template.ExecuteWriter(w)
@@ -98,4 +116,23 @@ func (ts *templateSymbolsFuncs) joke() (object.Object, error) {
 	}
 
 	return &object.ObjectString{Val: string(bytes)}, nil
+}
+
+func parseVariable(kv string) (string, object.Object, error) {
+	key, val, _ := strings.Cut(kv, ":")
+	if key == "" || val == "" {
+		return "", nil, fmt.Errorf("invalid input. key='%s' val='%s'", key, val)
+	}
+
+	// this is a string
+	if strings.HasPrefix(val, "'") && strings.HasSuffix(val, "'") {
+		return key, &object.ObjectString{Val: val[1 : len(val)-1]}, nil
+	}
+
+	// this is a number
+	if number, err := strconv.ParseFloat(val, 64); err == nil {
+		return key, &object.ObjectNumber{Val: number}, nil
+	}
+
+	return "", nil, fmt.Errorf("you cannot use symbols as variables: key='%s' val='%s'", key, val)
 }
