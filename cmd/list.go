@@ -10,10 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(ListCmd())
-}
-
 func ListCmd() *cobra.Command {
 	var fullPath bool
 	var listAll bool

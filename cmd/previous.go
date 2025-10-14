@@ -9,10 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(PreviousCmd())
-}
-
 type openPrevious struct {
 	view bool
 }

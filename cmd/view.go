@@ -13,10 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(ViewCmd())
-}
-
 func ViewCmd() *cobra.Command {
 	var toStdOut bool
 

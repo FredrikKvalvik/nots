@@ -10,10 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(OpenCmd())
-}
-
 func OpenCmd() *cobra.Command {
 
 	cmd := &cobra.Command{

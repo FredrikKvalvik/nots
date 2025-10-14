@@ -103,16 +103,23 @@ func TemplateDir() string {
 
 // currenlty only checks ~/.config/nots/nots.toml
 func resolveConfigPath() string {
+	configFilename := "nots.toml"
+	return fmt.Sprintf("%s/%s", resolveConfigDir(), configFilename)
+	// return filepath.Join(resolveConfigDir(), configFilename)
+}
+func resolveConfigDir() string {
 	homedir := must(os.UserHomeDir())
-	configPath := fmt.Sprintf("%s/.config/nots/nots.toml", homedir)
-	return configPath
+	parentDir := ".config/nots"
+
+	// configDir := fmt.Sprintf("%s/%s", homedir, parentDir)
+	configDir := filepath.Join(homedir, parentDir)
+	return configDir
 }
 
 // creates the template dir if it does not aleady exist
 func resolveTemplatePath() string {
-	cfgPath := resolveConfigPath()
-	rootPath := filepath.Dir(cfgPath)
-	templatePath := filepath.Join(rootPath, "templates")
+	cfgDir := resolveConfigDir()
+	templatePath := filepath.Join(cfgDir, "templates")
 	_ = os.MkdirAll(templatePath, 0646)
 	return templatePath
 }

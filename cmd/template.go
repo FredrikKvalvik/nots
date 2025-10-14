@@ -14,10 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(TemplateCmd())
-}
-
 func TemplateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "template",

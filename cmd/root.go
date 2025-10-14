@@ -20,14 +20,24 @@ var (
 	debug       = false
 
 	// looks wrong, but this enures that the config is loaded before init is called
-	cfg, err = config.Load()
+	cfg *config.Config
 
 	currentState *state.State
 )
 
 func init() {
-	// check error straight away to make sure to config is valid
+	var err error
+	cfg, err = config.Load()
 	cobra.CheckErr(err)
+
+	// register root commands
+	rootCmd.AddCommand(ListCmd())
+	rootCmd.AddCommand(TemplateCmd())
+	rootCmd.AddCommand(PreviousCmd())
+	rootCmd.AddCommand(OpenCmd())
+	rootCmd.AddCommand(ViewCmd())
+	rootCmd.AddCommand(SeriesCmd())
+
 	rootCmd.Flags().BoolVar(&viewContent, "view", false, "view the contents of todays note")
 	rootCmd.Flags().Var(&cfg.DefaultOpenMode, "open-mode", "sets the open mode for base nots command [series:series-name | previous]")
 

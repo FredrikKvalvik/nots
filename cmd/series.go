@@ -10,10 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(SeriesCmd())
-}
-
 func SeriesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "series",
